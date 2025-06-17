@@ -6,12 +6,27 @@ use App\Models\Permintaan;
 use App\Models\DetailPermintaan;
 use App\Models\Barang;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class PermintaanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $permintaans = Permintaan::with('detailPermintaan.barang')->get();
+        $query = Permintaan::query();
+
+        if ($request->filterType == 'tanggal' && $request->filled('tgl_permintaan')) {
+            $query->whereDate('tgl_permintaan', $request->tgl_permintaan);
+        } elseif ($request->filterType == 'bulan' && $request->filled('bulan_permintaan')) {
+            $bulan = substr($request->bulan_permintaan, 5, 2);
+            $tahun = substr($request->bulan_permintaan, 0, 4);
+            $query->whereMonth('tgl_permintaan', $bulan)
+                  ->whereYear('tgl_permintaan', $tahun);
+        } elseif ($request->filterType == 'tahun' && $request->filled('tahun_permintaan')) {
+            $query->whereYear('tgl_permintaan', $request->tahun_permintaan);
+        }
+
+        $permintaans = $query->orderBy('tgl_permintaan', 'asc')->get();
+
         return view('permintaan.index', compact('permintaans'));
     }
 
@@ -136,4 +151,14 @@ class PermintaanController extends Controller
         $permintaanTerbaru = Permintaan::with('detailPermintaan.barang')->latest('tgl_permintaan')->take(5)->get();
         return view('dashboard', compact('permintaanTerbaru'));
     }
+
+    public function cetak($id)
+    {
+        $permintaan = Permintaan::with('detailPermintaan.barang')->findOrFail($id);
+        $tanggalCetak = Carbon::now()->locale('id')->isoFormat('D MMMM YYYY');
+
+        return view('permintaan.cetak', compact('permintaan', 'tanggalCetak'));
+    }
+
+    
 }

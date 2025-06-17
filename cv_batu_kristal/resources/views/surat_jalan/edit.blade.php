@@ -1,34 +1,46 @@
 @extends('layouts.main')
 
 @section('content')
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-header fw-bold">
-            Edit Surat Jalan
+<div class="container">
+    <h3>Edit Surat Jalan</h3>
+    <form action="{{ route('surat_jalan.update', $suratJalan->id_surat_jalan) }}" method="POST">
+        @csrf
+        @method('PUT')
+
+        <div class="mb-3">
+            <label for="id_surat" class="form-label">ID Surat Jalan</label>
+            <input type="text" name="id_surat_jalan" id="id_surat_jalan" class="form-control" value="{{ old('id_surat_jalan', $suratJalan->id_surat_jalan) }}" readonly>
+            @error('id_surat_jalan')
+                <div class="alert alert-danger mt-1">{{ $message }}</div>
+            @enderror
         </div>
-        <div class="card-body">
-            <form action="{{ route('surat_jalan.update', $suratJalan->id_surat_jalan) }}" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="mb-3">
-                    <label for="id_permintaan" class="form-label">Pilih Permintaan</label>
-                    <select class="form-select" id="id_permintaan" name="id_permintaan" required>
-                        <option value="">-- Pilih Permintaan --</option>
-                        @foreach($permintaans as $permintaan)
-                            <option value="{{ $permintaan->id }}" {{ $suratJalan->id_permintaan == $permintaan->id ? 'selected' : '' }}>
-                                {{ $permintaan->nama_pemesan }} - {{ $permintaan->nama_barang }} ({{ $permintaan->jumlah }} {{ $permintaan->satuan }})
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="tanggal" class="form-label">Tanggal Surat Jalan</label>
-                    <input type="date" class="form-control" id="tanggal" name="tanggal" value="{{ old('tanggal', $suratJalan->tanggal) }}" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Update</button>
-                <a href="{{ route('surat_jalan.index') }}" class="btn btn-secondary">Batal</a>
-            </form>
+
+        <div class="mb-3">
+            <label for="tgl_surat" class="form-label">Tanggal Surat Jalan</label>
+            <input type="date" name="tanggal" id="tanggal" class="form-control" value="{{ old('tanggal', $suratJalan->tanggal) }}" required>
+            @error('tgl_surat')
+                <div class="alert alert-danger mt-1">{{ $message }}</div>
+            @enderror
         </div>
-    </div>
+
+        <div class="mb-3">
+            <label for="nama_pemesan" class="form-label">Nama Pemesan</label>
+            <input type="text" name="nama_pemesan" id="nama_pemesan" class="form-control" value="{{ old('nama_pemesan', $suratJalan->nama_pemesan) }}" required>
+            @error('nama_pemesan')
+                <div class="alert alert-danger mt-1">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-3">
+            <label for="alamat" class="form-label">Alamat</label>
+            <textarea name="alamat" id="alamat" class="form-control" rows="2" required>{{ old('alamat', $suratJalan->alamat) }}</textarea>
+            @error('alamat')
+                <div class="alert alert-danger mt-1">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a href="{{ route('surat_jalan.index') }}" class="btn btn-secondary">Batal</a>
+    </form>
 </div>
 @endsection

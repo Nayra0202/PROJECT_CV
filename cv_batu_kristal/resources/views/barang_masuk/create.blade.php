@@ -16,6 +16,9 @@
                     </ul>
                 </div>
             @endif
+            @if(session('error'))
+                <div class="alert alert-danger">{!! session('error') !!}</div>
+            @endif
             <form action="{{ route('barang_masuk.store') }}" method="POST">
                 @csrf
                 <div class="mb-3">
@@ -38,7 +41,7 @@
                     <tbody>
                         <tr>
                             <td>
-                                <select class="form-control" name="barang[0][id_barang]" required onchange="setSatuan(this)">
+                                <select class="form-control" name="barang[0][id_barang]" required onchange="setSatuan(this)" id="barangSelect">
                                     <option value="">-- Pilih Barang --</option>
                                     @foreach($barangs as $barang)
                                         <option value="{{ $barang->id_barang }}" data-satuan="{{ $barang->satuan }}">
@@ -46,6 +49,7 @@
                                         </option>
                                     @endforeach
                                 </select>
+                                <div class="invalid-feedback" id="barangError"></div>
                             </td>
                             <td>
                                 <input type="number" class="form-control" name="barang[0][jumlah]" required min="1">
@@ -57,6 +61,34 @@
                                 <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Hapus</button>
                             </td>
                         </tr>
+                        @php
+                            $barangInputs = old('barang', []);
+                        @endphp
+
+                        @foreach($barangInputs as $i => $barang)
+                            <tr>
+                                <td>
+                                    <select class="form-control" name="barang[{{ $i }}][id_barang]" required onchange="setSatuan(this)" id="barangSelect">
+                                        <option value="">-- Pilih Barang --</option>
+                                        @foreach($barangs as $b)
+                                            <option value="{{ $b->id_barang }}" {{ $barang['id_barang'] == $b->id_barang ? 'selected' : '' }} data-satuan="{{ $b->satuan }}">
+                                                {{ $b->id_barang }} - {{ $b->nama_barang }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div class="invalid-feedback" id="barangError"></div>
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control" name="barang[{{ $i }}][jumlah]" required min="1" value="{{ $barang['jumlah'] ?? '' }}">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control satuan-field" name="barang[{{ $i }}][satuan]" readonly value="{{ $barang['satuan'] ?? '' }}">
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Hapus</button>
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
                 <button type="button" class="btn btn-success btn-sm" onclick="addRow()">Tambah Barang</button>
@@ -77,7 +109,7 @@ function addRow() {
 
     newRow.innerHTML = `
         <td>
-            <select class="form-control" name="barang[${rowCount}][id_barang]" required onchange="setSatuan(this)">
+            <select class="form-control" name="barang[${rowCount}][id_barang]" required onchange="setSatuan(this)" id="barangSelect">
                 <option value="">-- Pilih Barang --</option>
                 @foreach($barangs as $barang)
                     <option value="{{ $barang->id_barang }}" data-satuan="{{ $barang->satuan }}">
@@ -85,6 +117,7 @@ function addRow() {
                     </option>
                 @endforeach
             </select>
+            <div class="invalid-feedback" id="barangError"></div>
         </td>
         <td>
             <input type="number" class="form-control" name="barang[${rowCount}][jumlah]" required min="1">
@@ -109,4 +142,15 @@ function setSatuan(select) {
     let satuanInput = select.closest('tr').querySelector('.satuan-field');
     satuanInput.value = satuan || '';
 }
+
+document.getElementById('barangSelect').addEventListener('change', function() {
+    var selectedOption = this.options[this.selectedIndex];
+    var status = selectedOption.getAttribute('data-status');
+    var errorDiv = document.getElementById('barangError');
+    errorDiv.textContent = '';
+    if(status && status !== 'disetujui') {
+        errorDiv.textContent = 'Barang "' + selectedOption.text + '" belum divalidasi/disetujui.';
+        this.selectedIndex = 0; // reset pilihan
+    }
+});
 </script>

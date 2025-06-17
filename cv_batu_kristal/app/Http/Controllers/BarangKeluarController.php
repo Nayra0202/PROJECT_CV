@@ -12,9 +12,23 @@ use Illuminate\Support\Facades\DB;
 
 class BarangKeluarController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $barangKeluars = BarangKeluar::with(['permintaan','detailBarangKeluar.barang'])->get();
+        $query = BarangKeluar::query();
+
+        if ($request->filterType == 'tanggal' && $request->filled('tgl_keluar')) {
+            $query->whereDate('tgl_keluar', $request->tgl_keluar);
+        } elseif ($request->filterType == 'bulan' && $request->filled('bulan_keluar')) {
+            $bulan = substr($request->bulan_keluar, 5, 2);
+            $tahun = substr($request->bulan_keluar, 0, 4);
+            $query->whereMonth('tgl_keluar', $bulan)
+                  ->whereYear('tgl_keluar', $tahun);
+        } elseif ($request->filterType == 'tahun' && $request->filled('tahun_keluar')) {
+            $query->whereYear('tgl_keluar', $request->tahun_keluar);
+        }
+
+        $barangKeluars = $query->orderBy('tgl_keluar', 'asc')->get();
+
         return view('barang_keluar.index', compact('barangKeluars'));
     }
 

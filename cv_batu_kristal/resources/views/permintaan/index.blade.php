@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.main') 
 
 @section('content')
 <div class="container mt-4">
@@ -11,6 +11,26 @@
             @if(session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
+
+            <div class="mb-4">
+                <form action="{{ route('permintaan.index') }}" method="GET" class="d-flex flex-column gap-3">
+                    <label for="filterType" class="form-label" style="font-size: 1.1rem;">Pilih Berdasarkan</label>
+                    <div class="d-flex align-items-center gap-3">
+                        <select id="filterType" name="filterType" class="form-select form-select-lg" style="width: 180px;">
+                            <option value="">Filter</option>
+                            <option value="tanggal" {{ request('filterType') == 'tanggal' ? 'selected' : '' }}>Tanggal</option>
+                            <option value="bulan" {{ request('filterType') == 'bulan' ? 'selected' : '' }}>Bulan</option>
+                            <option value="tahun" {{ request('filterType') == 'tahun' ? 'selected' : '' }}>Tahun</option>
+                        </select>
+                        <input type="date" id="inputTanggal" name="tgl_permintaan" class="form-control form-control-lg" style="width: 200px;" value="{{ request('tgl_permintaan') }}" {{ request('filterType') == 'tanggal' ? '' : 'disabled' }}>
+                        <input type="month" id="inputBulan" name="bulan_permintaan" class="form-control form-control-lg" style="width: 170px;" value="{{ request('bulan_permintaan') }}" {{ request('filterType') == 'bulan' ? '' : 'disabled' }}>
+                        <input type="number" id="inputTahun" name="tahun_permintaan" class="form-control form-control-lg" style="width: 130px;" min="2000" max="2099" placeholder="Tahun" value="{{ request('tahun_permintaan') }}" {{ request('filterType') == 'tahun' ? '' : 'disabled' }}>
+                        <button type="submit" class="btn btn-lg btn-primary" style="min-width: 100px;">Cari</button>
+                        <a href="{{ route('permintaan.index') }}" class="btn btn-lg btn-secondary" style="min-width: 100px;">Reset</a>
+                    </div>
+                </form>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-bordered table-striped">
                     <thead>
@@ -20,9 +40,9 @@
                             <th>Daftar Barang</th>
                             <th>Tanggal Permintaan</th>
                             <th>Nama Pemesan</th>
-                            <th>Alamat </th>
+                            <th>Alamat</th>
                             <th>Total Bayar</th>
-                            <th>Status </th>
+                            <th>Status</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -42,33 +62,32 @@
                                 <td>{{ $permintaan->nama_pemesan }}</td>
                                 <td>{{ $permintaan->alamat }}</td>
                                 <td>Rp{{ number_format($permintaan->total_bayar, 0, ',', '.') }}</td>
-                                <td>
-                                    @if($permintaan->status == 'Menunggu Persetujuan')
-                                        <span class="badge bg-warning text-dark">Menunggu Persetujuan</span>
-                                    @elseif($permintaan->status == 'Disetujui')
-                                        <span class="badge bg-success">Disetujui</span>
-                                    @elseif($permintaan->status == 'Sedang Proses')
-                                        <span class="badge bg-danger">Sedang Proses</span>
-                                    @elseif($permintaan->status == 'Sedang Perjalanan')
-                                        <span class="badge bg-success">Sedang Perjalanan</span>
-                                    @elseif($permintaan->status == 'Selesai')
-                                        <span class="badge bg-danger">Selesai</span>
-                                    @else
-                                        <span class="badge bg-secondary">{{ $permintaan->status }}</span>
-                                    @endif
-                                </td>
-                                <td class="d-flex gap-1">
-                                    <a href="{{ route('permintaan.edit', $permintaan->id_permintaan) }}" class="btn btn-warning btn-sm">Edit</a>
-                                    <form action="{{ route('permintaan.destroy', $permintaan->id_permintaan) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin hapus semua barang di permintaan ini?')">
+                                <td>{{ $permintaan->status }}</td>
+                                <td class="d-flex gap-2">
+                                    {{-- Tombol Edit --}}
+                                    <a href="{{ route('permintaan.edit', $permintaan->id_permintaan) }}" class="btn btn-sm p-1" title="Edit">
+                                        <img src="{{ asset('images/icons/edit.png') }}" alt="Edit" width="20">
+                                    </a>
+
+                                    {{-- Tombol Hapus --}}
+                                    <form action="{{ route('permintaan.destroy', $permintaan->id_permintaan) }}" method="POST" onsubmit="return confirm('Yakin ingin hapus semua barang di permintaan ini?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn btn-danger btn-sm" type="submit">Hapus</button>
+                                        <button type="submit" class="btn btn-sm p-1" title="Hapus">
+                                            <img src="{{ asset('images/icons/trash.png') }}" alt="Hapus" width="20">
+                                        </button>
                                     </form>
+
+                                    {{-- Tombol Cetak --}}
+                                    <a href="{{ route('permintaan.cetak', $permintaan->id_permintaan) }}" target="_blank" class="btn btn-sm p-1" title="Cetak">
+                                        <img src="{{ asset('images/icons/printer.png') }}" alt="Cetak" width="20">
+                                    </a>
                                 </td>
+
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center">Data permintaan belum tersedia.</td>
+                                <td colspan="9" class="text-center">Data permintaan belum tersedia.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -78,3 +97,27 @@
     </div>
 </div>
 @endsection
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterType = document.getElementById('filterType');
+    const inputTanggal = document.getElementById('inputTanggal');
+    const inputBulan = document.getElementById('inputBulan');
+    const inputTahun = document.getElementById('inputTahun');
+
+    function updateInputs() {
+        inputTanggal.disabled = filterType.value !== 'tanggal';
+        inputBulan.disabled = filterType.value !== 'bulan';
+        inputTahun.disabled = filterType.value !== 'tahun';
+    }
+
+    filterType.addEventListener('change', function() {
+        inputTanggal.value = '';
+        inputBulan.value = '';
+        inputTahun.value = '';
+        updateInputs();
+    });
+
+    updateInputs();
+});
+</script>

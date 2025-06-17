@@ -167,7 +167,7 @@
               <div class="card-body d-flex align-items-center justify-content-between">
                 <div>
                   <h3 class="fw-bold mb-1">Selamat Datang di Dashboard CV. Batu Kristal</h3>
-                  <p class="mb-0 fs-5">Sistem Informasi Pengelolaan Barang & Permintaan</p>
+                  <p class="mb-0 fs-5">Sistem Informasi Pemesanan Barang Secara Online </p>
                 </div>
                 <div>
                   <img src="{{ asset('images/logos/logocv-removebg-preview.png') }}" alt="Logo" style="width:70px;">

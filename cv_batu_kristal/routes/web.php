@@ -12,14 +12,13 @@ use App\Http\Controllers\DetailBarangMasukController;
 use App\Http\Controllers\DetailPermintaanController;
 use App\Http\Controllers\DetailSuratJalanController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', [PermintaanController::class, 'dashboard'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 // Resource route untuk menu utama
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -46,7 +45,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan/barang/cetak', [LaporanController::class, 'cetakLaporanBarang'])->name('laporan.barang.cetak');
     Route::get('/laporan/permintaan', [LaporanController::class, 'laporanPermintaan'])->name('laporan.permintaan');
     Route::get('/laporan/permintaan/cetak', [LaporanController::class, 'cetakLaporanPermintaan'])->name('laporan.permintaan.cetak');
-});
+    Route::get('/permintaan/{id}/cetak', [PermintaanController::class, 'cetak'])->name('permintaan.cetak');
+}); 
 
 require __DIR__.'/auth.php';
 

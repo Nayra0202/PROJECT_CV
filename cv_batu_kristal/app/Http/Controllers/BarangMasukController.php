@@ -13,9 +13,23 @@ class BarangMasukController extends Controller
      * Display a listing of the resource.
      */
     // Menampilkan daftar barang masuk, digroup berdasarkan ID masuk
-    public function index()
+    public function index(Request $request)
     {
-        $barangMasuks = BarangMasuk::with('detailBarangMasuk.barang')->get();
+        $query = BarangMasuk::query();
+
+        if ($request->filterType == 'tanggal' && $request->filled('tgl_masuk')) {
+            $query->whereDate('tgl_masuk', $request->tgl_masuk);
+        } elseif ($request->filterType == 'bulan' && $request->filled('bulan_masuk')) {
+            $bulan = substr($request->bulan_masuk, 5, 2);
+            $tahun = substr($request->bulan_masuk, 0, 4);
+            $query->whereMonth('tgl_masuk', $bulan)
+                  ->whereYear('tgl_masuk', $tahun);
+        } elseif ($request->filterType == 'tahun' && $request->filled('tahun_masuk')) {
+            $query->whereYear('tgl_masuk', $request->tahun_masuk);
+        }
+
+        $barangMasuks = $query->orderBy('id_masuk', 'asc')->get();
+
         return view('barang_masuk.index', compact('barangMasuks'));
     }
 
@@ -45,14 +59,33 @@ class BarangMasukController extends Controller
     // Menyimpan data barang masuk ke database
     public function store(Request $request)
     {
-        $request->validate([
-            'id_masuk' => 'required|unique:barang_masuks,id_masuk',
-            'tgl_masuk' => 'required|date',
-            'barang' => 'required|array|min:1',
-            'barang.*.id_barang' => 'required|exists:barangs,id_barang',
-            'barang.*.jumlah' => 'required|integer|min:1',
-            'barang.*.satuan' => 'required|string',
-        ]);
+        // Ambil semua detail barang dari input
+        $details = $request->barang;
+
+        // Ambil semua id barang dari input
+        $barangIds = collect($details)->pluck('id_barang')->toArray();
+
+        // Ambil barang yang belum disetujui
+        $barangsBelumDisetujui = \App\Models\Barang::whereIn('id_barang', $barangIds)
+            ->where('status', '!=', 'disetujui')
+            ->get(['id_barang', 'nama_barang']);
+
+        if ($barangsBelumDisetujui->count() > 0) {
+            $idsBelum = $barangsBelumDisetujui->pluck('id_barang')->toArray();
+
+            $barangValid = collect($details)->reject(function($item) use ($idsBelum) {
+                return in_array($item['id_barang'], $idsBelum);
+            })->values()->all();
+
+            $pesan = '';
+            foreach ($barangsBelumDisetujui as $b) {
+                $pesan .= 'ID Barang ' . $b->id_barang . ' dengan nama barang ' . $b->nama_barang . ' belum divalidasi/disetujui oleh Direktur. Silahkan masukkan data barang masuk yang lain.<br>';
+            }
+
+            return redirect()->back()
+                ->withInput(['barang' => $barangValid])
+                ->with('error', $pesan);
+        }
 
         // Simpan data utama ke tabel barang_masuks
         $barangMasuk = BarangMasuk::create([

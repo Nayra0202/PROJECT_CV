@@ -11,9 +11,21 @@ class BarangController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $barangs = Barang::all();
+        $query = Barang::query();
+
+        if ($request->filterType == 'tanggal' && $request->filled('tgl_masuk')) {
+            $query->whereDate('created_at', $request->tgl_masuk);
+        } elseif ($request->filterType == 'bulan' && $request->filled('bulan_masuk')) {
+            $query->whereMonth('created_at', substr($request->bulan_masuk, 5, 2))
+                  ->whereYear('created_at', substr($request->bulan_masuk, 0, 4));
+        } elseif ($request->filterType == 'tahun' && $request->filled('tahun_masuk')) {
+            $query->whereYear('created_at', $request->tahun_masuk);
+        }
+
+        $barangs = $query->get();
+
         return view('barang.index', compact('barangs'));
     }
 

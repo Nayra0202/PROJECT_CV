@@ -16,101 +16,78 @@
             </div>
           </div>
         </div>
-        <!--  Row 1 -->
+
+
+        <!-- Tabel Permintaan Terbaru -->
         <div class="row">
-          <div class="col-lg-8 d-flex align-items-strech">
-            <div class="card w-100">
-              <div class="card-body">
-                <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
-                  <div class="mb-3 mb-sm-0">
-                    <h5 class="card-title fw-semibold">Sales Overview</h5>
-                  </div>
-                          @forelse($permintaanTerbaru as $permintaan)
-                      <strong>{{ $permintaan->id_permintaan }}</strong> - {{ $permintaan->nama_pemesan }} ({{ $permintaan->tgl_permintaan }})
-                      <ul>
-                        @foreach($permintaan->detailPermintaan as $detail)
-                          <li>{{ $detail->barang->nama_barang }} - {{ $detail->jumlah }} {{ $detail->satuan }}</li>
-                        @endforeach
-                      </ul>
-                    @empty
-                      <p class="text-muted">Belum ada permintaan.</p>
-                    @endforelse
-                </div>
-      --
-              </div>
+    <!-- Card 1: Tabel Permintaan Terbaru -->
+    <div class="col-lg-8 mb-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Tabel Permintaan Terbaru</h5>
             </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="row">
-              <div class="col-lg-12">
-                <!-- Yearly Breakup -->
-                <div class="card overflow-hidden">
-                  <div class="card-body p-4">
-                    <h5 class="card-title mb-9 fw-semibold">Yearly Breakup</h5>
-                    <div class="row align-items-center">
-                      <div class="col-8">
-                        <h4 class="fw-semibold mb-3">$36,358</h4>
-                        <div class="d-flex align-items-center mb-3">
-                          <span
-                            class="me-1 rounded-circle bg-light-success round-20 d-flex align-items-center justify-content-center">
-                            <i class="ti ti-arrow-up-left text-success"></i>
-                          </span>
-                          <p class="text-dark me-1 fs-3 mb-0">+9%</p>
-                          <p class="fs-3 mb-0">last year</p>
-                        </div>
-                        <div class="d-flex align-items-center">
-                          <div class="me-4">
-                            <span class="round-8 bg-primary rounded-circle me-2 d-inline-block"></span>
-                            <span class="fs-2">2023</span>
-                          </div>
-                          <div>
-                            <span class="round-8 bg-light-primary rounded-circle me-2 d-inline-block"></span>
-                            <span class="fs-2">2023</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-4">
-                        <div class="d-flex justify-content-center">
-                          <div id="breakup"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-0">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>ID Permintaan</th>
+                                <th>Tanggal Permintaan</th>
+                                <th>Nama Peminta</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($permintaans as $i => $permintaan)
+                                <tr>
+                                    <td>{{ $i + 1 }}</td>
+                                    <td>{{ $permintaan->id_permintaan }}</td>
+                                    <td>{{ $permintaan->tgl_permintaan }}</td>
+                                    <td>{{ $permintaan->nama_pemesan ?? '-' }}</td>
+                                    <td>{{ $permintaan->status ?? '-' }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="text-center">Belum ada data permintaan.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
-              </div>
-              <div class="col-lg-12">
-                <!-- Monthly Earnings -->
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row alig n-items-start">
-                      <div class="col-8">
-                        <h5 class="card-title mb-9 fw-semibold"> Monthly Earnings </h5>
-                        <h4 class="fw-semibold mb-3">$6,820</h4>
-                        <div class="d-flex align-items-center pb-1">
-                          <span
-                            class="me-2 rounded-circle bg-light-danger round-20 d-flex align-items-center justify-content-center">
-                            <i class="ti ti-arrow-down-right text-danger"></i>
-                          </span>
-                          <p class="text-dark me-1 fs-3 mb-0">+9%</p>
-                          <p class="fs-3 mb-0">last year</p>
-                        </div>
-                      </div>
-                      <div class="col-4">
-                        <div class="d-flex justify-content-end">
-                          <div
-                            class="text-white bg-secondary rounded-circle p-6 d-flex align-items-center justify-content-center">
-                            <i class="ti ti-currency-dollar fs-6"></i>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div id="earning"></div>
-                </div>
-              </div>
             </div>
-          </div>
         </div>
+    </div>
+    <!-- Card 2: Summary -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Ringkasan Data</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Total Permintaan
+                        <span class="badge bg-primary rounded-pill">{{ $totalPermintaan }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Total Barang
+                        <span class="badge bg-success rounded-pill">{{ $totalBarang }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Total Barang Masuk
+                        <span class="badge bg-info rounded-pill">{{ $totalBarangMasuk }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Total Barang Keluar
+                        <span class="badge bg-warning rounded-pill">{{ $totalBarangKeluar }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
         <div class="row">
           <div class="col-lg-4 d-flex align-items-stretch">
             <div class="card w-100">
@@ -435,5 +412,6 @@
             </div>
           </div>
         </div>
+</div>
 
-@endsection 
+@endsection

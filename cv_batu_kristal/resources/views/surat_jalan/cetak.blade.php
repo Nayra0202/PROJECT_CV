@@ -37,7 +37,8 @@
 
     <div class="header">
         <p><strong>Palembang, {{ \Carbon\Carbon::parse($suratJalan->tanggal)->translatedFormat('d F Y') }}</strong></p>
-        <p><strong>Toko:</strong> {{ $suratJalan->nama_toko ?? 'Toko Enak Dempo Ilir' }}</p>
+        <p><strong>Tuan :</strong> {{ $suratJalan->nama_pemesan ?? 'nama_pemesan' }}</p>
+        <p><strong>Alamat :</strong> {{ $suratJalan->alamat ?? 'alamat' }}</p>
     </div>
 
     <table>
@@ -72,5 +73,10 @@
         </div>
     </div>
 
+    <script>
+        window.onload = function() {
+            window.print();
+        };
+    </script>
 </body>
 </html>

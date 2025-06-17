@@ -51,6 +51,8 @@
                         <option value="Selesai" {{ $permintaan->status == 'Selesai' ? 'selected' : '' }}>Selesai</option>
                     </select>
                 </div>
+                <button type="submit" class="btn btn-primary">Update</button>
+                <a href="{{ route('permintaan.index') }}" class="btn btn-secondary">Batal</a>
                 <hr>
                 <h5>Detail Barang</h5>
 
@@ -89,9 +91,6 @@
                     </div>
                 </div>
                 @endforeach
-
-                <button type="submit" class="btn btn-primary">Update</button>
-                <a href="{{ route('permintaan.index') }}" class="btn btn-secondary">Batal</a>
             </form>
         </div>
     </div>

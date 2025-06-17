@@ -14,9 +14,23 @@ class SuratJalanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $suratJalans = SuratJalan::with('permintaan.detailPermintaan.barang')->get();
+        $query = SuratJalan::query();
+
+        if ($request->filterType == 'tanggal' && $request->filled('tanggal')) {
+            $query->whereDate('tanggal', $request->tgl_surat);
+        } elseif ($request->filterType == 'bulan' && $request->filled('bulan_surat')) {
+            $bulan = substr($request->bulan_surat, 5, 2);
+            $tahun = substr($request->bulan_surat, 0, 4);
+            $query->whereMonth('tanggal', $bulan)
+                  ->whereYear('tanggal', $tahun);
+        } elseif ($request->filterType == 'tahun' && $request->filled('tahun_surat')) {
+            $query->whereYear('tanggal', $request->tahun_surat);
+        }
+
+        $suratJalans = $query->orderBy('tanggal', 'asc')->get();
+
         return view('surat_jalan.index', compact('suratJalans'));
     }
 
@@ -113,9 +127,37 @@ class SuratJalanController extends Controller
         return redirect()->route('surat_jalan.index')->with('success', 'Surat jalan berhasil dihapus.');
     }
 
+    /**
+     * Cetak Surat Jalan
+     */
     public function cetak($id)
     {
         $suratJalan = SuratJalan::with('permintaan.detailPermintaan.barang')->findOrFail($id);
         return view('surat_jalan.cetak', compact('suratJalan'));
+    }
+
+    /**
+     * Cetak Laporan Surat Jalan
+     */
+    public function cetakLaporanSuratJalan(Request $request)
+    {
+        $filter = $request->filter;
+        $value = $request->value;
+
+        $suratJalans = \App\Models\SuratJalan::with('detailSuratJalan.barang');
+
+        if ($filter && $value) {
+            if ($filter === 'tanggal') {
+                $suratJalans->whereDate('tgl_surat', $value);
+            } elseif ($filter === 'bulan') {
+                $suratJalans->whereMonth('tgl_surat', $value);
+            } elseif ($filter === 'tahun') {
+                $suratJalans->whereYear('tgl_surat', $value);
+            }
+        }
+
+        $suratJalans = $suratJalans->get();
+
+        return view('laporan.cetak_surat_jalan', compact('suratJalans', 'filter', 'value'));
     }
 }
