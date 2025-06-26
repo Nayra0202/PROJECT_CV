@@ -17,9 +17,10 @@ class Barang extends Model
     protected $fillable = [
         'id_barang',
         'nama_barang',
+        'satuan',
+        'gambar',
         'harga',
         'stok',
-        'satuan',
         'status',
         'keterangan',
         'tgl_input',
@@ -31,5 +32,21 @@ class Barang extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
+    }
+    public function barangMasuk()
+    {
+        return $this->hasMany(BarangMasuk::class, 'id_barang', 'id_barang');
+    }
+    public function detailBarangMasuk()
+    {
+        return $this->hasMany(DetailBarangMasuk::class, 'id_barang', 'id_barang');
+    }
+    public function barangKeluar()
+    {
+        return $this->hasMany(BarangKeluar::class, 'id_barang', 'id_barang');
+    }
+    public function detailBarangKeluar()
+    {
+        return $this->hasMany(DetailBarangKeluar::class, 'id_barang', 'id_barang');
     }
 }

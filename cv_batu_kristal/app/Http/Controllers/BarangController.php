@@ -54,18 +54,27 @@ class BarangController extends Controller
         $request->validate([
             'id_barang'   => 'required|string|max:255|unique:barangs,id_barang',
             'nama_barang' => 'required|string|max:255',
-            'harga'       => 'required',
             'satuan'      => 'required|string|max:50',
+            'gambar'      => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'harga'       => 'required',
         ]);
 
         $harga = preg_replace('/[^\d]/', '', $request->harga);
 
+        // Handle gambar
+        $gambarName = null;
+        if ($request->hasFile('gambar')) {
+            $gambarPath = $request->file('gambar')->store('barang', 'public');
+            $gambarName = basename($gambarPath);
+        }
+
         Barang::create([
             'id_barang'     => $request->id_barang,
             'nama_barang'   => $request->nama_barang,
+            'satuan'        => $request->satuan,
+            'gambar'        => $gambarName,
             'harga'         => $harga,
             'stok'          => 0,
-            'satuan'        => $request->satuan,
             'status'        => 'Menunggu',
             'keterangan'    => $request->keterangan ?? 'Menunggu Persetujuan',
             'tgl_input'     => now(),
@@ -96,41 +105,48 @@ class BarangController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, Barang $barang)
-{
-    $request->validate([
-        'nama_barang' => 'required|string|max:255',
-        'harga'       => 'required',
-        'satuan'      => 'required|string|max:50',
-        'status'      => 'required|in:Menunggu,Disetujui,Ditolak',
-    ]);
+    {
+        $request->validate([
+            'nama_barang' => 'required|string|max:255',
+            'satuan'      => 'required|string|max:50',
+            'gambar'      => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'harga'       => 'required',
+            'status'      => 'required|in:Menunggu,Disetujui,Ditolak',
+        ]);
 
-    $harga = preg_replace('/[^\d]/', '', $request->harga);
+        $harga = preg_replace('/[^\d]/', '', $request->harga);
 
-    // Data dasar
-    $data = [
-        'nama_barang' => $request->nama_barang,
-        'harga'       => $harga,
-        'satuan'      => $request->satuan,
-        'status'      => $request->status,
-    ];
+        // Data dasar
+        $data = [
+            'nama_barang' => $request->nama_barang,
+            'harga'       => $harga,
+            'satuan'      => $request->satuan,
+            'status'      => $request->status,
+        ];
 
-    if ($request->status == 'Disetujui') {
-        if (!$barang->tgl_disetujui) {
-            $data['tgl_disetujui'] = now();
+        if ($request->status == 'Disetujui') {
+            if (!$barang->tgl_disetujui) {
+                $data['tgl_disetujui'] = now();
+            }
+            $data['keterangan'] = 'Sudah Oke';
+        } elseif ($request->status == 'Menunggu') {
+            $data['keterangan'] = 'Menunggu Persetujuan';
+            $data['tgl_disetujui'] = null;
+        } elseif ($request->status == 'Ditolak') {
+            $data['keterangan'] = 'Ditolak';
+            $data['tgl_disetujui'] = null;
         }
-        $data['keterangan'] = 'Sudah Oke';
-    } elseif ($request->status == 'Menunggu') {
-        $data['keterangan'] = 'Menunggu Persetujuan';
-        $data['tgl_disetujui'] = null;
-    } elseif ($request->status == 'Ditolak') {
-        $data['keterangan'] = 'Ditolak';
-        $data['tgl_disetujui'] = null;
+
+        // Update gambar jika ada file baru
+        if ($request->hasFile('gambar')) {
+        $gambarPath = $request->file('gambar')->store('barang', 'public');
+        $data['gambar'] = basename($gambarPath);
+        }
+
+        $barang->update($data);
+
+        return redirect()->route('barang.index')->with('success', 'Data barang berhasil diupdate.');
     }
-
-    $barang->update($data);
-
-    return redirect()->route('barang.index')->with('success', 'Data barang berhasil diupdate.');
-}
 
 
     /**

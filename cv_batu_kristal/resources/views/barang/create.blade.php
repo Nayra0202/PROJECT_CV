@@ -17,7 +17,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('barang.store') }}" method="POST">
+            <form action="{{ route('barang.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="mb-3">
@@ -42,15 +42,14 @@
                         <option value="Botol">Botol</option>
                     </select>
                 </div>
-
+                <div class="mb-3">
+                    <label for="gambar" class="form-label">Gambar Barang (opsional)</label>
+                    <input type="file" class="form-control" id="gambar" name="gambar" accept="image/*">
+                </div>
                 <div class="mb-3">
                     <label for="harga" class="form-label">Harga</label>
                     <input type="text" class="form-control" id="harga" name="harga" value="Rp. " required>
                 </div>
-
-                <!-- tgl_input otomatis di controller, tidak perlu diinput user -->
-                <!-- stok tidak diinput manual, akan bertambah otomatis lewat Barang Masuk -->
-
                 <button type="submit" class="btn btn-primary">Simpan</button>
                 <a href="{{ route('barang.index') }}" class="btn btn-secondary">Batal</a>
             </form>

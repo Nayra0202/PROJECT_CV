@@ -135,14 +135,28 @@
     }
 
     function hitungTotalHarga(inputJumlah) {
-        const row = inputJumlah.closest('tr');
-        const harga = parseInt(row.getAttribute('data-harga')) || 0;
-        const jumlah = parseInt(inputJumlah.value) || 0;
-        const total = harga * jumlah;
+    const row = inputJumlah.closest('tr');
+    const harga = parseInt(row.getAttribute('data-harga')) || 0;
+    const jumlah = parseInt(inputJumlah.value) || 0;
 
-        row.querySelector('input[name$="[total_harga]"]').value = total;
-        hitungTotalBayar();
+    const select = row.querySelector('select[name$="[id_barang]"]');
+    const stokAwal = parseInt(select.options[select.selectedIndex].getAttribute('data-stok')) || 0;
+    const sisaStok = stokAwal - jumlah;
+
+    // Validasi jika jumlah melebihi stok
+    if (jumlah > stokAwal) {
+        alert('Jumlah melebihi stok yang tersedia!');
+        inputJumlah.value = '';
+        row.querySelector('input[name$="[total_harga]"]').value = '';
+        row.querySelector('input[name$="[stok]"]').value = stokAwal;
+        return;
     }
+
+    row.querySelector('input[name$="[stok]"]').value = sisaStok;
+    row.querySelector('input[name$="[total_harga]"]').value = harga * jumlah;
+
+    hitungTotalBayar();
+}
 
     function hitungTotalBayar() {
         let totalBayar = 0;

@@ -36,8 +36,10 @@
                     <thead>
                         <tr>
                             <th>No</th>
+                            <th>ID Surat Jalan</th>
                             <th>Tanggal</th>
                             <th>Nama Pemesan</th>
+                            <th>Alamat</th>
                             <th>Nama Barang</th>
                             <th>Jumlah</th>
                             <th>Satuan</th>
@@ -48,8 +50,10 @@
                         @forelse($suratJalans as $sj)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
+                            <td>{{ $sj->id_surat_jalan }}</td> {{-- ID Surat Jalan --}}
                             <td>{{ $sj->tanggal }}</td>
                             <td>{{ $sj->nama_pemesan }}</td>
+                            <td>{{ $sj->alamat }}</td>
                             <td>
                                 <ul class="list-unstyled mb-0">
                                     @foreach($sj->permintaan->detailPermintaan as $detail)

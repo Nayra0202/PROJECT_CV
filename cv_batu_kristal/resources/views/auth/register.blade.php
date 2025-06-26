@@ -69,6 +69,20 @@
                 </div>
 
                 <div class="mb-3">
+                    <label for="role" class="form-label text-primary">Role</label>
+                    <select id="role" name="role" class="form-control" required>
+                        <option value="">-- Pilih Role --</option>
+                        <option value="Klien" {{ old('role') == 'Klien' ? 'selected' : '' }}>Klien</option>
+                        <option value="Direktur" {{ old('role') == 'Direktur' ? 'selected' : '' }}>Direktur</option>
+                        <option value="Sales Manager" {{ old('role') == 'Sales Manager' ? 'selected' : '' }}>Sales Manager</option>
+                        <option value="Sales Marketing" {{ old('role') == 'Sales Marketing' ? 'selected' : '' }}>Sales Marketing</option>
+                        <option value="Sekretaris" {{ old('role') == 'Sekretaris' ? 'selected' : '' }}>Sekretaris</option>
+                        <option value="Bagian Gudang" {{ old('role') == 'Bagian Gudang' ? 'selected' : '' }}>Bagian Gudang</option>
+                        <option value="Bagian Pengiriman" {{ old('role') == 'Bagian Pengiriman' ? 'selected' : '' }}>Bagian Pengiriman</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
                     <label for="password" class="form-label text-primary">Password</label>
                     <input id="password" class="form-control" type="password" name="password" required autocomplete="new-password" />
                 </div>

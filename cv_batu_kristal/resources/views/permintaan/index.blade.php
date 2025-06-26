@@ -4,8 +4,15 @@
 <div class="container mt-4">
     <div class="card">
         <div class="card-header fw-bold d-flex justify-content-between align-items-center">
-            Daftar Permintaan Barang
-            <a href="{{ route('permintaan.create') }}" class="btn btn-primary btn-sm">Tambah Permintaan</a>
+            Daftar Pemesanan Barang
+            @php
+                $blockedRoles = ['Direktur', 'Sekretaris', 'Bagian Gudang', 'Bagian Pengiriman'];
+            @endphp
+
+            @if(!in_array(auth()->user()->role, $blockedRoles))
+                <a href="{{ route('permintaan.create') }}" class="btn btn-primary btn-sm">Tambah Pemesanan</a>
+            @endif
+
         </div>
         <div class="card-body">
             @if(session('success'))
@@ -36,7 +43,7 @@
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>ID Permintaan</th>
+                            <th>ID Pemesanan</th>
                             <th>Daftar Barang</th>
                             <th>Tanggal Permintaan</th>
                             <th>Nama Pemesan</th>
@@ -54,7 +61,11 @@
                                 <td>
                                     <ul>
                                         @foreach($permintaan->detailPermintaan as $detail)
-                                            <li>{{ $detail->barang->nama_barang }} - {{ $detail->jumlah }} {{ $detail->barang->satuan }} (Rp{{ number_format($detail->total_harga, 0, ',', '.') }})</li>
+                                                @if($detail->barang)
+                                                    <li>{{ $detail->barang->nama_barang }} - {{ $detail->jumlah }} {{ $detail->barang->satuan }} (Rp{{ number_format($detail->total_harga, 0, ',', '.') }})</li>
+                                                @else
+                                                    <li><em>Data barang tidak ditemukan</em></li>
+                                                @endif
                                         @endforeach
                                     </ul>
                                 </td>

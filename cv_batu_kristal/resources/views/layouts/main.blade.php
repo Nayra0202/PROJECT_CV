@@ -34,74 +34,155 @@
               <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
               <span class="hide-menu">Home</span>
             </li>
+            {{-- Dashboard: Semua role dapat --}}
             <li class="sidebar-item">
-              <a class="sidebar-link" href="{{ route('dashboard') }}" aria-expanded="false">
-                <span>
-                  <i class="ti ti-layout-dashboard"></i>
-                </span>
+              <a class="sidebar-link" href="{{ route('dashboard') }}">
+                <span><i class="ti ti-layout-dashboard"></i></span>
                 <span class="hide-menu">Dashboard</span>
               </a>
             </li>
-            <li class="nav-small-cap">
-              <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-              <span class="hide-menu">Menu</span>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="{{ route('barang.index') }}" aria-expanded="false">
-                <span>
-                  <i class="ti ti-article"></i>
-                </span>
-                <span class="hide-menu">Barang</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="{{ route('barang_masuk.index') }}" aria-expanded="false">
-                <span>
-                  <i class="ti ti-alert-circle"></i>
-                </span>
-                <span class="hide-menu">Barang Masuk</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="{{ route('permintaan.index') }}" aria-expanded="false">
-                <span>
-                  <i class="ti ti-cards"></i>
-                </span>
-                <span class="hide-menu">Permintaan</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="{{ route('barang_keluar.index') }}" aria-expanded="false">
-                <span>
-                  <i class="ti ti-file-description"></i>
-                </span>
-                <span class="hide-menu">Barang Keluar</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="{{ route('surat_jalan.index') }}" aria-expanded="false">
-                <span>
-                  <i class="ti ti-typography"></i>
-                </span>
-                <span class="hide-menu">Surat Jalan</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="{{ route('laporan.barang') }}" aria-expanded="false">
-                <span>
-                  <i class="ti ti-report"></i>
-                </span>
-                <span class="hide-menu">Laporan Barang</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="{{ route('laporan.permintaan') }}" aria-expanded="false">
-                <span>
-                  <i class="ti ti-file-invoice"></i>
-                </span>
-                <span class="hide-menu">Laporan Permintaan</span>
-              </a>
-            </li>
+
+            {{-- Klien: Dashboard & Pemesanan --}}
+            @if(auth()->user()->role == 'Klien')
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('permintaan.index') }}">
+                        <span><i class="ti ti-cards"></i></span>
+                        <span class="hide-menu">Pemesanan</span>
+                    </a>
+                </li>
+            @endif
+
+            {{-- Direktur: Dashboard, Barang, Pemesanan, Laporan Barang, Laporan Pemesanan --}}
+            @if(auth()->user()->role == 'Direktur')
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('barang.index') }}">
+                        <span><i class="ti ti-article"></i></span>
+                        <span class="hide-menu">Barang</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('permintaan.index') }}">
+                        <span><i class="ti ti-cards"></i></span>
+                        <span class="hide-menu">Pemesanan</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('laporan.barang') }}">
+                        <span><i class="ti ti-report"></i></span>
+                        <span class="hide-menu">Laporan Barang</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('laporan.permintaan') }}">
+                        <span><i class="ti ti-file-invoice"></i></span>
+                        <span class="hide-menu">Laporan Pemesanan</span>
+                    </a>
+                </li>
+            @endif
+
+            {{-- Sales Manager: Dashboard, Barang, Laporan Pemesanan --}}
+            @if(auth()->user()->role == 'Sales Manager')
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('barang.index') }}">
+                        <span><i class="ti ti-article"></i></span>
+                        <span class="hide-menu">Barang</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('laporan.permintaan') }}">
+                        <span><i class="ti ti-file-invoice"></i></span>
+                        <span class="hide-menu">Laporan Pemesanan</span>
+                    </a>
+                </li>
+            @endif
+
+            {{-- Sales Marketing: Dashboard, Barang, Pemesanan --}}
+            @if(auth()->user()->role == 'Sales Marketing')
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('barang.index') }}">
+                        <span><i class="ti ti-article"></i></span>
+                        <span class="hide-menu">Barang</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('permintaan.index') }}">
+                        <span><i class="ti ti-cards"></i></span>
+                        <span class="hide-menu">Pemesanan</span>
+                    </a>
+                </li>
+            @endif
+
+            {{-- Sekretaris: Dashboard, Barang, Pemesanan, Laporan Barang, Laporan Pemesanan --}}
+            @if(auth()->user()->role == 'Sekretaris')
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('barang.index') }}">
+                        <span><i class="ti ti-article"></i></span>
+                        <span class="hide-menu">Barang</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('permintaan.index') }}">
+                        <span><i class="ti ti-cards"></i></span>
+                        <span class="hide-menu">Pemesanan</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('laporan.barang') }}">
+                        <span><i class="ti ti-report"></i></span>
+                        <span class="hide-menu">Laporan Barang</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('laporan.permintaan') }}">
+                        <span><i class="ti ti-file-invoice"></i></span>
+                        <span class="hide-menu">Laporan Pemesanan</span>
+                    </a>
+                </li>
+            @endif
+
+            {{-- Bagian Gudang: Dashboard, Barang, Barang Masuk, Barang Keluar, Surat Jalan --}}
+            @if(auth()->user()->role == 'Bagian Gudang')
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('barang.index') }}">
+                        <span><i class="ti ti-article"></i></span>
+                        <span class="hide-menu">Barang</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('barang_masuk.index') }}">
+                        <span><i class="ti ti-alert-circle"></i></span>
+                        <span class="hide-menu">Barang Masuk</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('barang_keluar.index') }}">
+                        <span><i class="ti ti-file-description"></i></span>
+                        <span class="hide-menu">Barang Keluar</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('surat_jalan.index') }}">
+                        <span><i class="ti ti-typography"></i></span>
+                        <span class="hide-menu">Surat Jalan</span>
+                    </a>
+                </li>
+            @endif
+
+            {{-- Bagian Pengiriman: Dashboard, Pemesanan, Surat Jalan --}}
+            @if(auth()->user()->role == 'Bagian Pengiriman')
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('permintaan.index') }}">
+                        <span><i class="ti ti-cards"></i></span>
+                        <span class="hide-menu">Pemesanan</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('surat_jalan.index') }}">
+                        <span><i class="ti ti-typography"></i></span>
+                        <span class="hide-menu">Surat Jalan</span>
+                    </a>
+                </li>
+            @endif
     </aside>
     <!--  Sidebar End -->
     <!--  Main wrapper -->
@@ -132,13 +213,9 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                   <div class="message-body">
-                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                    <a href="{{ route('profile.show') }}" class="d-flex align-items-center gap-2 dropdown-item">
                       <i class="ti ti-user fs-6"></i>
                       <p class="mb-0 fs-3">My Profile</p>
-                    </a>
-                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                      <i class="ti ti-mail fs-6"></i>
-                      <p class="mb-0 fs-3">My Account</p>
                     </a>
                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
@@ -187,6 +264,8 @@
             </div>
           </div>
         </div>
+
+        
         <div class="py-6 px-6 text-center d-flex justify-content-center align-items-center" style="min-height:80px;">
           <p class="mb-0 fs-4">Aplikasi dibuat oleh Nayra Alya Denita - Universitas MDP</p>
         </div>

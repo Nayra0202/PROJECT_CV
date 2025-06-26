@@ -9,10 +9,14 @@
         <div class="card-body">
             <form action="{{ route('surat_jalan.store') }}" method="POST">
                 @csrf
+                                <div class="mb-3">
+                    <label for="id_surat_jalan" class="form-label">ID Surat Jalan</label>
+                    <input type="text" name="id_surat_jalan" id="id_surat_jalan" class="form-control" value="{{ $newId }}" readonly>
+                </div>
                 <div class="mb-3">
-                    <label for="id_permintaan" class="form-label">Pilih Permintaan</label>
+                    <label for="id_permintaan" class="form-label">Pilih Pemesanan</label>
                     <select class="form-select" id="id_permintaan" name="id_permintaan" required>
-                        <option value="">-- Pilih Permintaan --</option>
+                        <option value="">-- Pilih Pemesanan --</option>
                         @foreach($permintaans as $permintaan)
                             <option value="{{ $permintaan->id_permintaan }}">
                                 {{ $permintaan->nama_pemesan }} - Permintaan #{{ $permintaan->id_permintaan }}

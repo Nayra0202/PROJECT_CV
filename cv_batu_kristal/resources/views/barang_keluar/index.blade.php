@@ -33,7 +33,7 @@
                         <tr>
                             <th>No</th>
                             <th>ID Keluar</th>
-                            <th>ID Permintaan</th>
+                            <th>Detail Pemesanan</th>
                             <th>Daftar Barang</th>
                             <th>Tanggal Keluar</th>
                             <th>Aksi</th>

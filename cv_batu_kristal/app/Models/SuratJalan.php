@@ -10,12 +10,14 @@ class SuratJalan extends Model
     protected $table = 'surat_jalans'; // pastikan sesuai dengan nama tabel di migration
 
     protected $primaryKey = 'id_surat_jalan'; // sesuaikan dengan migration jika PK bukan 'id'
+    protected $keyType = 'string'; 
 
     protected $fillable = [
         'id_surat_jalan',
         'id_permintaan',
         'tanggal',
         'nama_pemesan',
+        'alamat',
         'nama_barang',
         'jumlah',
         'satuan',

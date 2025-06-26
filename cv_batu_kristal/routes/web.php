@@ -13,6 +13,7 @@ use App\Http\Controllers\DetailPermintaanController;
 use App\Http\Controllers\DetailSuratJalanController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\DashboardController;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('welcome');
@@ -35,7 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // Profile routes
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'edit'])->middleware('auth')->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
@@ -46,7 +47,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan/permintaan', [LaporanController::class, 'laporanPermintaan'])->name('laporan.permintaan');
     Route::get('/laporan/permintaan/cetak', [LaporanController::class, 'cetakLaporanPermintaan'])->name('laporan.permintaan.cetak');
     Route::get('/permintaan/{id}/cetak', [PermintaanController::class, 'cetak'])->name('permintaan.cetak');
+    Route::get('/profil', function () {
+        return view('profile.profil');
+    })->middleware('auth')->name('profile.show');
 }); 
+
+Route::get('/cari-barang', function(Request $request) {
+    $barangs = \App\Models\Barang::where('nama_barang', 'like', '%'.$request->q.'%')->get();
+    return response()->json($barangs);
+});
+
 
 require __DIR__.'/auth.php';
 

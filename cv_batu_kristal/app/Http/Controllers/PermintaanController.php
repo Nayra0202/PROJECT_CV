@@ -13,6 +13,7 @@ class PermintaanController extends Controller
     public function index(Request $request)
     {
         $query = Permintaan::query();
+        
 
         if ($request->filterType == 'tanggal' && $request->filled('tgl_permintaan')) {
             $query->whereDate('tgl_permintaan', $request->tgl_permintaan);
@@ -25,12 +26,12 @@ class PermintaanController extends Controller
             $query->whereYear('tgl_permintaan', $request->tahun_permintaan);
         }
 
-        $permintaans = $query->orderBy('tgl_permintaan', 'asc')->get();
+        $permintaans = $query->with('detailPermintaan.barang')->orderBy('tgl_permintaan', 'asc')->get();
 
         return view('permintaan.index', compact('permintaans'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $last = Permintaan::orderBy('id_permintaan', 'desc')->first();
         if ($last) {
@@ -41,7 +42,12 @@ class PermintaanController extends Controller
         }
         $newIdPermintaan = 'P' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
 
-        $barangs = Barang::all();
+        // Tambahkan fitur pencarian barang
+        $query = Barang::query();
+        if ($request->q) {
+            $query->where('nama_barang', 'like', '%' . $request->q . '%');
+        }
+        $barangs = $query->get();
 
         return view('permintaan.create', compact('newIdPermintaan', 'barangs'));
     }
@@ -159,6 +165,4 @@ class PermintaanController extends Controller
 
         return view('permintaan.cetak', compact('permintaan', 'tanggalCetak'));
     }
-
-    
 }

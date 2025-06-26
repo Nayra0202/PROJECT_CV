@@ -17,7 +17,7 @@
 
                 {{-- ID Permintaan --}}
                 <div class="mb-3">
-                    <label class="form-label">ID Permintaan</label>
+                    <label class="form-label">Detail Pemesanan</label>
                     <input type="text" class="form-control" value="{{ $barangKeluar->id_permintaan }} - {{ $barangKeluar->permintaan->nama_pemesan ?? '' }}" readonly>
                 </div>
 

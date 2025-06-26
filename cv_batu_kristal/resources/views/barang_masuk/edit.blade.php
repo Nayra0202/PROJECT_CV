@@ -2,36 +2,61 @@
 
 @section('content')
 <div class="container mt-4">
-    <div class="card">
-        <div class="card-header fw-bold">
-            Detail Barang Masuk (ID: {{ $barangMasuk->id_masuk }})
+    <h4>Edit Barang Masuk (ID: {{ $barangMasuk->id_masuk }})</h4>
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <strong>Gagal menyimpan:</strong>
+            <ul>
+                @foreach($errors->all() as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
+            </ul>
         </div>
-        <div class="card-body">
-            <a href="{{ route('barang_masuk.edit', $barangMasuk) }}">Edit</a>
-                @csrf
-                @method('PUT')
+    @endif
 
-            <div class="mb-3">
-                <label class="form-label">Tanggal Masuk</label>
-                <input type="date" class="form-control" value="{{ $barangMasuk->tgl_masuk }}" readonly>
-            </div>
+    <form action="{{ route('barang_masuk.update', $barangMasuk->id_masuk) }}" method="POST">
+        @csrf
+        @method('PUT')
 
-            <div class="mb-3">
-                <label class="form-label">Daftar Barang</label>
-                <ul class="list-group">
-                    @foreach($barangMasuk->detailBarangMasuk as $detail)
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ $detail->barang->nama_barang }}
-                            <span>{{ $detail->jumlah }} {{ $detail->barang->satuan }}</span>
-                        </li>
+        <div class="mb-3">
+            <label for="tgl_masuk" class="form-label">Tanggal Masuk</label>
+            <input type="date" name="tgl_masuk" class="form-control" value="{{ old('tgl_masuk', $barangMasuk->tgl_masuk) }}" required>
+        </div>
+
+        <h5>Detail Barang</h5>
+        @foreach($barangMasuk->detailBarangMasuk as $index => $detail)
+            <input type="hidden" name="detail[{{ $index }}][id_detail_masuk]" value="{{ $detail->id_detail_masuk }}">
+
+            <div class="mb-2">
+                <label>Nama Barang</label>
+                <select name="detail[{{ $index }}][id_barang]" class="form-control" required>
+                    @foreach($barangs as $barang)
+                        <option value="{{ $barang->id_barang }}" {{ $barang->id_barang == $detail->id_barang ? 'selected' : '' }}>
+                            {{ $barang->nama_barang }}
+                        </option>
                     @endforeach
-                </ul>
+                </select>
             </div>
 
-            <a href="{{ route('barang_masuk.index') }}" class="btn btn-secondary mt-3">Kembali</a>
+            <div class="mb-2">
+                <label>Jumlah</label>
+                <input type="number" name="detail[{{ $index }}][jumlah]" class="form-control" value="{{ $detail->jumlah }}" min="1" required>
+            </div>
 
-        </div>
-    </div>
-    </div>
+            <div class="mb-3">
+                <label>Satuan</label>
+                <input type="text" name="detail[{{ $index }}][satuan]" class="form-control" value="{{ $detail->satuan }}" required>
+            </div>
+            <hr>
+        @endforeach
+
+        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+        <a href="{{ route('barang_masuk.index') }}" class="btn btn-secondary">Kembali</a>
+    </form>
 </div>
 @endsection

@@ -39,8 +39,26 @@ class SuratJalanController extends Controller
      */
     public function create()
     {
-        $permintaans = Permintaan::all();
-        return view('surat_jalan.create', compact('permintaans'));
+        $permintaans = Permintaan::with('detailPermintaan.barang')->whereNotIn('id_permintaan', function($query) {
+        $query->select('id_permintaan')
+              ->from('surat_jalans');
+    })
+    ->get();
+
+        // Ambil ID terakhir dari surat jalan
+        $last = SuratJalan::orderBy('id_surat_jalan', 'desc')->first();
+
+        if ($last) {
+            // Ambil angka dari ID terakhir, misal SJ0005 -> 5
+            $number = (int)substr($last->id_surat_jalan, 2) + 1;
+        } else {
+            $number = 1;
+        }
+
+        // Format ID baru, misal SJ0006
+        $newId = 'SJ' . str_pad($number, 4, '0', STR_PAD_LEFT);
+
+        return view('surat_jalan.create', compact('permintaans','newId'));
     }
 
     /**
@@ -55,10 +73,13 @@ class SuratJalanController extends Controller
 
         $permintaan = Permintaan::findOrFail($request->id_permintaan);
 
+        
         $suratJalan = SuratJalan::create([
+            'id_surat_jalan' => $request->id_surat_jalan,
             'id_permintaan' => $permintaan->id_permintaan,
             'tanggal'       => $request->tanggal,
             'nama_pemesan'  => $permintaan->nama_pemesan,
+            'alamat'  => $permintaan->alamat,
         ]);
 
         // Ambil detail barang keluar berdasarkan permintaan
@@ -99,7 +120,7 @@ class SuratJalanController extends Controller
     public function update(Request $request, \App\Models\SuratJalan $suratJalan)
     {
         $request->validate([
-            'id_permintaan' => 'required|exists:permintaans,id_permintaan',
+            'id_permintaan' => 'required|exists:permintaans,id_permintaan|unique:surat_jalans,id_permintaan',
             'tanggal' => 'required|date',
         ]);
 

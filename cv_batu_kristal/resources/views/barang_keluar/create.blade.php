@@ -16,7 +16,7 @@
 
                 {{-- Pilih Permintaan --}}
                 <div class="mb-3">
-                    <label class="form-label">Pilih Permintaan</label>
+                    <label class="form-label">Pilih Pemesanan</label>
                     <select name="id_permintaan" id="id_permintaan" class="form-select" required>
                         <option value="">-- Pilih Permintaan --</option>
                         @foreach($permintaans as $permintaan)

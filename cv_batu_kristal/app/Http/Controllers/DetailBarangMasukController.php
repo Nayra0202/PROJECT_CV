@@ -15,7 +15,7 @@ class DetailBarangMasukController extends Controller
         // Menampilkan semua data barang masuk (group by id_masuk)
         $barangMasuks = BarangMasuk::with('detailBarangMasuk.barang')->get();
 
-        return view('detail_barang_masuk.index', compact('barangMasuks'));
+        return view('barang_masuk.index', compact('barangMasuks'));
     }
 
     public function create()
@@ -31,7 +31,7 @@ class DetailBarangMasukController extends Controller
         }
         $newIdMasuk = 'M' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
-        return view('detail_barang_masuk.create', compact('newIdMasuk', 'barangs'));
+        return view('barang_masuk.create', compact('newIdMasuk', 'barangs'));
     }
 
     public function store(Request $request)
@@ -69,7 +69,7 @@ class DetailBarangMasukController extends Controller
     {
         $barangMasuk = BarangMasuk::with('details.barang')->where('id_masuk', $id_masuk)->firstOrFail();
 
-        return view('detail_barang_masuk.show', compact('barangMasuk'));
+        return view('barang_masuk.show', compact('barangMasuk'));
     }
 
     public function edit($id_masuk)
@@ -77,51 +77,48 @@ class DetailBarangMasukController extends Controller
         $barangMasuk = BarangMasuk::with('details')->where('id_masuk', $id_masuk)->firstOrFail();
         $barangs = Barang::all();
 
-        return view('detail_barang_masuk.edit', compact('barangMasuk', 'barangs'));
+        return view('barang_masuk.edit', compact('barangMasuk', 'barangs'));
     }
 
-    public function update(Request $request, $id_masuk)
-    {
-        $request->validate([
-            'tgl_masuk' => 'required|date',
-            'barang.*.id_barang' => 'required|exists:barangs,id_barang',
-            'barang.*.jumlah' => 'required|integer|min:1',
-        ]);
+    public function update(Request $request, $id)
+{
+    $barangMasuk = BarangMasuk::findOrFail($id);
 
-        DB::transaction(function () use ($request, $id_masuk) {
-    $barangMasuk = BarangMasuk::where('id_masuk', $id_masuk)->firstOrFail();
-    $barangMasuk->update([
-        'tgl_masuk' => $request->tgl_masuk,
+    $request->validate([
+        'tgl_masuk' => 'required|date',
+        'detail' => 'required|array',
+        'detail.*.id_detail_masuk' => 'required|exists:detail_barang_masuks,id_detail_masuk',
+        'detail.*.jumlah' => 'required|integer|min:1',
+        'detail.*.satuan' => 'required|string',
     ]);
 
-    // Ambil detail lama untuk rollback stok
-    $detailsLama = DetailBarangMasuk::where('id_masuk', $id_masuk)->get();
-    foreach ($detailsLama as $oldDetail) {
-        Barang::where('id_barang', $oldDetail->id_barang)->decrement('stok', $oldDetail->jumlah);
-        }
-
-    // Hapus detail lama
-    DetailBarangMasuk::where('id_masuk', $id_masuk)->delete();
-
-    // Simpan dan update stok baru
-    foreach ($request->barang as $item) {
-        DetailBarangMasuk::create([
-            'id_masuk' => $id_masuk,
-            'id_barang' => $item['id_barang'],
-            'jumlah' => $item['jumlah'],
-            'satuan' => $item['satuan'],
+    DB::transaction(function () use ($barangMasuk, $request) {
+        // 1. Update tanggal masuk
+        $barangMasuk->update([
+            'tgl_masuk' => $request->tgl_masuk,
         ]);
 
-        $barang = Barang::where('id_barang', $item['id_barang'])->first();
-        if ($barang) {
-            $barang->increment('stok', $item['jumlah']);
+        // 2. Rollback stok lama
+        foreach ($request->detail as $item) {
+            $detailLama = DetailBarangMasuk::findOrFail($item['id_detail_masuk']);
+            Barang::where('id_barang', $detailLama->id_barang)->decrement('stok', $detailLama->jumlah);
         }
-    }
-});
 
+        // 3. Update detail & tambahkan stok baru
+        foreach ($request->detail as $item) {
+            DetailBarangMasuk::where('id_detail_masuk', $item['id_detail_masuk'])->update([
+                'jumlah' => $item['jumlah'],
+                'satuan' => $item['satuan'],
+            ]);
 
-        return redirect()->route('detail_barang_masuk.index')->with('success', 'Data berhasil diupdate.');
-    }
+            $detailBaru = DetailBarangMasuk::findOrFail($item['id_detail_masuk']);
+            Barang::where('id_barang', $detailBaru->id_barang)->increment('stok', $item['jumlah']);
+        }
+    });
+
+    return redirect()->route('barang_masuk.index')->with('success', 'Barang masuk & stok berhasil diperbarui.');
+}
+
 
     public function destroy($id_masuk)
     {
@@ -136,6 +133,6 @@ class DetailBarangMasukController extends Controller
         BarangMasuk::where('id_masuk', $id_masuk)->delete();
     });
 
-        return redirect()->route('detail_barang_masuk.index')->with('success', 'Data berhasil dihapus.');
+        return redirect()->route('barang_masuk.index')->with('success', 'Data berhasil dihapus.');
     }
 }

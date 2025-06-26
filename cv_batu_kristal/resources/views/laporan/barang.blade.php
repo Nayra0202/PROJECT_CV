@@ -6,55 +6,58 @@
         <div class="card-header fw-bold">
             Laporan Barang
         </div>
-
         <div class="card-body">
-            <form method="GET" action="{{ route('laporan.barang') }}" class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <label for="filter" class="form-label">Pilih Filter</label>
-                    <select name="filter" id="filter" class="form-select">
-                        <option value="">-- Pilih --</option>
-                        <option value="tanggal">Tanggal</option>
-                        <option value="bulan">Bulan</option>
-                        <option value="tahun">Tahun</option>
-                    </select>
-                </div>
-
-                <div class="col-md-4">
-                    <label for="value" class="form-label">Masukkan Nilai</label>
-                    <input type="text" name="value" id="value" class="form-control" placeholder="Contoh: 2025-06-10 atau 06 atau 2025">
-                </div>
-
-                <div class="col-md-4 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary me-2">Tampilkan</button>
-                    <a href="{{ route('laporan.barang') }}" class="btn btn-secondary me-2">Reset</a>
-                    <a href="{{ route('laporan.barang.cetak', request()->query()) }}" target="_blank" class="btn btn-success">Cetak</a>
-                </div>
+            <form id="filterForm" action="{{ route('laporan.barang') }}" method="GET" class="d-flex align-items-center gap-2">
+                <label for="filterType" class="form-label me-2" style="min-width: 140px;">Pilih Berdasarkan</label>
+                <select id="filterType" name="filterType" class="form-select form-select-sm" style="width: 130px;">
+                    <option value="">Filter</option>
+                    <option value="tanggal" {{ request('filterType') == 'tanggal' ? 'selected' : '' }}>Tanggal</option>
+                    <option value="bulan" {{ request('filterType') == 'bulan' ? 'selected' : '' }}>Bulan</option>
+                    <option value="tahun" {{ request('filterType') == 'tahun' ? 'selected' : '' }}>Tahun</option>
+                </select>
+                <input type="date" id="inputTanggal" name="tanggal" class="form-control form-control-sm" style="width: 130px;" value="{{ request('tanggal') }}" disabled>
+                <input type="month" id="inputBulan" name="bulan" class="form-control form-control-sm" style="width: 110px;" value="{{ request('bulan') }}" disabled>
+                <input type="number" id="inputTahun" name="tahun" class="form-control form-control-sm" style="width: 80px;" min="2000" max="2099" placeholder="Tahun" value="{{ request('tahun') }}" disabled>
+                <button type="submit" class="btn btn-sm btn-primary">Cari</button>
+                <a href="{{ route('laporan.barang') }}" class="btn btn-sm btn-secondary">Reset</a>
             </form>
 
-            <div class="table-responsive">
+            <div class="table-responsive mt-3">
                 <table class="table table-bordered">
-                    <thead class="table-light">
+                    <thead>
                         <tr>
-                            <th>No</th>
+                            <th>ID Barang</th>
                             <th>Nama Barang</th>
-                            <th>Satuan</th>
-                            <th>Stok</th>
-                            <th>Tanggal Input</th>
+                            <th>Stok Awal</th>
+                            <th>Tanggal Masuk • Jumlah Masuk</th>
+                            <th>Tanggal Keluar • Jumlah Keluar</th>
+                            <th>Stok Saat Ini</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($barangs as $barang)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $barang->nama_barang }}</td>
-                                <td>{{ $barang->satuan }}</td>
-                                <td>{{ $barang->stok }}</td>
-                                <td>{{ \Carbon\Carbon::parse($barang->created_at)->format('d-m-Y') }}</td>
-                            </tr>
+                        @forelse($laporan as $row)
+                        <tr>
+                            <td>{{ $row['id_barang']?? ''  }}</td>
+                            <td>{{ $row['nama_barang'] }}</td>
+                            <td>{{ $row['stok_awal'] ?? ''  }}</td>
+                            <td>
+                                {{ $row['tgl_masuk'] ?? '' }}
+                                @if($row['jumlah_masuk'] > 0)
+                                    • {{ $row['jumlah_masuk'] }} {{ $row['satuan'] }}
+                                @endif
+                            </td>
+                            <td>
+                                {{ $row['tgl_keluar' ] ?? ''  }}
+                                @if($row['jumlah_keluar'] > 0)
+                                    • {{ $row['jumlah_keluar'] }} {{ $row['satuan'] }}
+                                @endif
+                            </td>
+                            <td>{{ $row['stok_akhir'] }}</td>
+                        </tr>
                         @empty
-                            <tr>
-                                <td colspan="5" class="text-center">Tidak ada data</td>
-                            </tr>
+                        <tr>
+                            <td colspan="6" class="text-center">Data laporan barang belum tersedia.</td>
+                        </tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -63,3 +66,21 @@
     </div>
 </div>
 @endsection
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterType = document.getElementById('filterType');
+        const inputTanggal = document.getElementById('inputTanggal');
+        const inputBulan = document.getElementById('inputBulan');
+        const inputTahun = document.getElementById('inputTahun');
+
+        function updateInputs() {
+            inputTanggal.disabled = filterType.value !== 'tanggal';
+            inputBulan.disabled = filterType.value !== 'bulan';
+            inputTahun.disabled = filterType.value !== 'tahun';
+        }
+
+        filterType.addEventListener('change', updateInputs);
+        updateInputs();
+    });
+</script>
