@@ -52,27 +52,24 @@ class LaporanController extends Controller
                 $satuan_keluar = isset($trx['keluar']) ? $trx['keluar']['satuan'] : '';
 
                 // TAMPILKAN HANYA JIKA ADA MASUK DAN KELUAR (SEMUA KOMPONEN ADA)
-                if (
-                    ($jumlah_masuk > 0 && !empty($tgl_masuk)) &&
-                    ($jumlah_keluar > 0 && !empty($tgl_keluar))
-                ) {
-                    $stok_akhir = $stok_awal + $jumlah_masuk - $jumlah_keluar;
-                    $laporan[] = [
-                        'id_barang' => $barang->id_barang,
-                        'nama_barang' => $barang->nama_barang,
-                        'satuan' => $barang->satuan,
-                        'stok_awal' => $stok_awal,
-                        'tgl_masuk' => $tgl_masuk,
-                        'jumlah_masuk' => $jumlah_masuk,
-                        'tgl_keluar' => $tgl_keluar,
-                        'jumlah_keluar' => $jumlah_keluar,
-                        'stok_akhir' => $stok_akhir,
-                    ];
-                    $stok_awal = $stok_akhir;
-                } else {
-                    // Update stok_awal jika hanya ada masuk atau keluar, tapi tidak tampilkan baris
-                    $stok_awal = $stok_awal + $jumlah_masuk - $jumlah_keluar;
-                }
+if (
+    ($jumlah_masuk > 0 && !empty($tgl_masuk)) ||
+    ($jumlah_keluar > 0 && !empty($tgl_keluar))
+) {
+    $stok_akhir = $stok_awal + $jumlah_masuk - $jumlah_keluar;
+    $laporan[] = [
+        'id_barang' => $barang->id_barang,
+        'nama_barang' => $barang->nama_barang,
+        'satuan' => $barang->satuan,
+        'stok_awal' => $stok_awal,
+        'tgl_masuk' => $tgl_masuk ?: '',
+        'jumlah_masuk' => $jumlah_masuk > 0 ? $jumlah_masuk : '',
+        'tgl_keluar' => $tgl_keluar ?: '',
+        'jumlah_keluar' => $jumlah_keluar > 0 ? $jumlah_keluar : '',
+        'stok_akhir' => $stok_akhir,
+    ];
+    $stok_awal = $stok_akhir;
+}
             }
         }
 

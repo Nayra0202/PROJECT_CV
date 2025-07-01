@@ -129,7 +129,7 @@ class BarangController extends Controller
                 $data['tgl_disetujui'] = now();
             }
             $data['keterangan'] = 'Sudah Oke';
-        } elseif ($request->status == 'Menunggu') {
+        } elseif ($request->status == 'Menunggu Persetujuan') {
             $data['keterangan'] = 'Menunggu Persetujuan';
             $data['tgl_disetujui'] = null;
         } elseif ($request->status == 'Ditolak') {

@@ -4,7 +4,7 @@
 <div class="container mt-4">
     <div class="card">
         <div class="card-header fw-bold">
-            Tambah Data Permintaan
+            Tambah Data Pemesanan
         </div>
 
         @if(session('error'))
@@ -40,7 +40,7 @@
                     <textarea class="form-control" name="alamat" required></textarea>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Tanggal Permintaan</label>
+                    <label class="form-label">Tanggal Pemesanan</label>
                     <input type="date" class="form-control" name="tgl_permintaan" value="{{ date('Y-m-d') }}" required>
                 </div>
 

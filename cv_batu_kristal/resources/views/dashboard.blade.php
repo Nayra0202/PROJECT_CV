@@ -104,6 +104,9 @@
           <h6 class="fw-semibold fs-4">{{ $barang->nama_barang }}</h6>
           <div class="d-flex align-items-center justify-content-between">
             <h6 class="fw-semibold fs-4 mb-0">Rp. {{ number_format($barang->harga, 0, ',', '.') }}</h6>
+            <a href="{{ url('/permintaan/create') }}" class="btn btn-sm btn-primary mt-2">
+                <img src="{{ asset('images/icons/plus.png') }}" alt="Edit" width="20" height="20">
+            </a>
           </div>
         </div>
       </div>
