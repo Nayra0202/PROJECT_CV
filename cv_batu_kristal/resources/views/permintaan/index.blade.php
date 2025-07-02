@@ -2,7 +2,20 @@
 
 @section('content')
 <div class="container mt-4">
-    <div class="card">
+        @php
+            $pesananBaru = $permintaans->where('status', 'Menunggu Persetujuan')->count();
+        @endphp
+
+        @if($pesananBaru > 0)
+            <div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <div>
+                    Terdapat <strong>{{ $pesananBaru }}</strong> pesanan baru yang belum disetujui.
+                </div>
+            </div>
+        @endif
+
+        <div class="card">
         <div class="card-header fw-bold d-flex justify-content-between align-items-center">
             Daftar Pemesanan Barang
             @php
@@ -90,9 +103,11 @@
                                     </form>
 
                                     {{-- Tombol Cetak --}}
+                                    @if(auth()->user()->role === 'Sekretaris')
                                     <a href="{{ route('permintaan.cetak', $permintaan->id_permintaan) }}" target="_blank" class="btn btn-sm p-1" title="Cetak">
                                         <img src="{{ asset('images/icons/printer.png') }}" alt="Cetak" width="20">
                                     </a>
+                                    @endif
                                 </td>
 
                             </tr>

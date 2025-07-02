@@ -75,7 +75,7 @@ class BarangController extends Controller
             'gambar'        => $gambarName,
             'harga'         => $harga,
             'stok'          => 0,
-            'status'        => 'Menunggu',
+            'status'        => 'Menunggu Persetujuan',
             'keterangan'    => $request->keterangan ?? 'Menunggu Persetujuan',
             'tgl_input'     => now(),
             'tgl_disetujui' => null,
@@ -111,7 +111,7 @@ class BarangController extends Controller
             'satuan'      => 'required|string|max:50',
             'gambar'      => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'harga'       => 'required',
-            'status'      => 'required|in:Menunggu,Disetujui,Ditolak',
+            'status' => 'required|in:Menunggu Persetujuan,Disetujui,Ditolak',
         ]);
 
         $harga = preg_replace('/[^\d]/', '', $request->harga);

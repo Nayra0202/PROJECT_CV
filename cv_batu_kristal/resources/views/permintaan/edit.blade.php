@@ -60,16 +60,25 @@
                         <label class="form-label">Total Bayar</label>
                         <input type="text" class="form-control" value="Rp. {{ number_format($permintaan->total_bayar,0,',','.') }}" readonly>
                     </div>
+
+                    @php
+                        $userRole = auth()->user()->role;
+                        $isClient = $userRole === 'klien';
+                    @endphp
                     <div class="mb-3">
                         <label for="status" class="form-label">Status</label>
-                        <select name="status" id="status" class="form-select">
+                        <select name="status" id="status" class="form-select" @if($isClient) disabled @endif>
                             <option value="Menunggu Persetujuan" {{ $permintaan->status == 'Menunggu Persetujuan' ? 'selected' : '' }}>Menunggu Persetujuan</option>
                             <option value="Disetujui" {{ $permintaan->status == 'Disetujui' ? 'selected' : '' }}>Disetujui</option>
                             <option value="Sedang Proses" {{ $permintaan->status == 'Sedang Proses' ? 'selected' : '' }}>Sedang Proses</option>
                             <option value="Sedang Perjalanan" {{ $permintaan->status == 'Sedang Perjalanan' ? 'selected' : '' }}>Sedang Perjalanan</option>
                             <option value="Selesai" {{ $permintaan->status == 'Selesai' ? 'selected' : '' }}>Selesai</option>
                         </select>
+                        @if($isClient)
+                            <input type="hidden" name="status" value="{{ $permintaan->status }}">
+                        @endif
                     </div>
+                    
                     <button type="submit" class="btn btn-primary">Update</button>
                     <a href="{{ route('permintaan.index') }}" class="btn btn-secondary">Batal</a>
                     <hr>

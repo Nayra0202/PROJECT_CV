@@ -26,6 +26,7 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
+                            <th>ID Pemesanan</th>
                             <th>ID Barang</th>
                             <th>Nama Barang</th>
                             <th>Stok Awal</th>
@@ -37,6 +38,7 @@
                     <tbody>
                         @forelse($laporan as $row)
                         <tr>
+                            <td>{{ $row['id_permintaan'] }}</td>
                             <td>{{ $row['id_barang']?? ''  }}</td>
                             <td>{{ $row['nama_barang'] }}</td>
                             <td>{{ $row['stok_awal'] ?? ''  }}</td>

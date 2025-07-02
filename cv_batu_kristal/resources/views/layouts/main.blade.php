@@ -237,33 +237,31 @@
         </nav>
       </header>
       <!--  Header End -->
-      <div class="container-fluid">
-        <div class="row mb-4">
-          <div class="col-12">
-            <div class="card bg-primary text-white shadow">
-              <div class="card-body d-flex align-items-center justify-content-between">
-                <div>
-                  <h3 class="fw-bold mb-1">Selamat Datang di Dashboard CV. Batu Kristal</h3>
-                  <p class="mb-0 fs-5">Sistem Informasi Pemesanan Barang Secara Online </p>
-                </div>
-                <div>
-                  <img src="{{ asset('images/logos/logocv-removebg-preview.png') }}" alt="Logo" style="width:70px;">
-                </div>
-              </div>
+      @if(Route::currentRouteName() == 'dashboard')
+      
+  <div class="container-fluid">
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card bg-primary text-white shadow">
+          <div class="card-body d-flex align-items-center justify-content-between">
+            <div>
+              <h3 class="fw-bold mb-1">Selamat Datang di Dashboard CV. Batu Kristal</h3>
+              <p class="mb-0 fs-5">Sistem Informasi Pemesanan Barang Secara Online</p>
+            </div>
+            <div>
+              <img src="{{ asset('images/logos/logocv-removebg-preview.png') }}" alt="Logo" style="width:70px;">
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-sm-12 col-xl-12 d-flex">
-            <div class="card overflow-hidden rounded-2 h-100 w-100">
-              <div class="position-relative">
-                </div>
-                  @yield('content')
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      </div>
+    </div>
+  </div>
+@endif
+
+{{-- Tempat semua konten halaman tampil --}}
+<div class="container-fluid">
+  @yield('content')
+</div>
 
         
         <div class="py-6 px-6 text-center d-flex justify-content-center align-items-center" style="min-height:80px;">

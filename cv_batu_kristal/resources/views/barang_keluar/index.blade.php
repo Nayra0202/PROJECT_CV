@@ -5,7 +5,6 @@
     <div class="card">
         <div class="card-header fw-bold d-flex justify-content-between align-items-center">
             Daftar Barang Keluar
-            <a href="{{ route('barang_keluar.create') }}" class="btn btn-primary btn-sm">Tambah Barang Keluar</a>
         </div>
         <div class="card-body">
             <?php if(session('success')): ?>

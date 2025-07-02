@@ -12,9 +12,19 @@
           berlokasi di Jalan Mayor Salim Batubara Gang Nurul Iman 1844/72 RT 006/02, Kota 
           Palembang, Sumatera Selatan.
         </p>
-      </div>
+    
+      @if(auth()->user()->role == 'Sekretaris' && $pemesananBaru > 0)
+        <div class="alert alert-danger d-flex align-items-center gap-2 my-4">
+          <i class="bi bi-bell-fill fs-4"></i>
+          <div>
+            Ada <strong>{{ $pemesananBaru }}</strong> pemesanan baru yang menunggu persetujuan.
+          </div>
+        </div>
+      @endif
+
     </div>
   </div>
+</div>
 </div>
 
 @if(auth()->user()->role != 'Klien')
@@ -68,6 +78,10 @@
       <div class="card-body">
         <ul class="list-group list-group-flush">
           <li class="list-group-item d-flex justify-content-between align-items-center">
+            Pemesanan Baru
+            <span class="badge bg-danger rounded-pill">{{ $pemesananBaru }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
             Total Pemesanan
             <span class="badge bg-primary rounded-pill">{{ $totalPermintaan }}</span>
           </li>
@@ -93,6 +107,7 @@
 <h4 class="fw-bold px-4">--- KATALOG BARANG ---</h4>
 <div class="row g-4 px-4 py-3" id="katalog-barang">
   @foreach($barangs as $i => $barang)
+    @if($barang->status != 'Menunggu Persetujuan')
     <div class="col-sm-6 col-xl-3 d-flex katalog-item {{ $i >= 24 ? 'd-none extra-item' : '' }}">
       <div class="card overflow-hidden rounded-2 h-100 w-100">
         <div class="position-relative">
@@ -101,16 +116,18 @@
           </a>
         </div>
         <div class="card-body pt-3 p-4">
-          <h6 class="fw-semibold fs-4">{{ $barang->nama_barang }}</h6>
-          <div class="d-flex align-items-center justify-content-between">
-            <h6 class="fw-semibold fs-4 mb-0">Rp. {{ number_format($barang->harga, 0, ',', '.') }}</h6>
-            <a href="{{ url('/permintaan/create') }}" class="btn btn-sm btn-primary mt-2">
-                <img src="{{ asset('images/icons/plus.png') }}" alt="Edit" width="20" height="20">
-            </a>
-          </div>
+        <h6 class="fw-semibold fs-4">{{ $barang->nama_barang }}</h6>
+        <div class="d-flex align-items-center justify-content-between">
+          <h6 class="fw-semibold fs-4 mb-0">Rp. {{ number_format($barang->harga, 0, ',', '.') }}</h6>
+          <a href="{{ url('/permintaan/create') }}" class="btn btn-sm btn-primary mt-2">
+            <img src="{{ asset('images/icons/plus.png') }}" alt="Edit" width="20" height="20">
+          </a>
         </div>
+        <p class="mb-1 text-muted">Stok: {{ $barang->stok }}</p> {{-- Tambahan baris ini --}}
+      </div>
       </div>
     </div>
+    @endif
   @endforeach
 </div>
 

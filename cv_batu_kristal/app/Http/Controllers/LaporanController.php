@@ -35,6 +35,7 @@ class LaporanController extends Controller
                     'tanggal' => $tgl,
                     'jumlah' => $keluar->jumlah,
                     'satuan' => $keluar->satuan ?? $barang->satuan,
+                    'id_permintaan' => $keluar->barangKeluar->id_permintaan ?? null,
                 ];
             }
 
@@ -43,6 +44,7 @@ class LaporanController extends Controller
 
             $stok_awal = 0;
             foreach ($transaksiGabung as $tgl => $trx) {
+                $id_permintaan = isset($trx['keluar']['id_permintaan']) ? $trx['keluar']['id_permintaan'] : 'NA';
                 $jumlah_masuk = isset($trx['masuk']) ? $trx['masuk']['jumlah'] : 0;
                 $tgl_masuk = isset($trx['masuk']) ? $trx['masuk']['tanggal'] : '';
                 $satuan_masuk = isset($trx['masuk']) ? $trx['masuk']['satuan'] : '';
@@ -58,6 +60,7 @@ if (
 ) {
     $stok_akhir = $stok_awal + $jumlah_masuk - $jumlah_keluar;
     $laporan[] = [
+        'id_permintaan' => $id_permintaan,
         'id_barang' => $barang->id_barang,
         'nama_barang' => $barang->nama_barang,
         'satuan' => $barang->satuan,

@@ -36,6 +36,7 @@
                         <option value="">-- Pilih Satuan --</option>
                         <option value="Kotak">Kotak</option>
                         <option value="Rim">Rim</option>
+                        <option value="Lusin">Lusin</option>
                         <option value="Roll">Roll</option>
                         <option value="Buah">Buah</option>
                         <option value="Pack">Pack</option>

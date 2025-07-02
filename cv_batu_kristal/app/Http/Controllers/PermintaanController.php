@@ -5,16 +5,27 @@ namespace App\Http\Controllers;
 use App\Models\Permintaan;
 use App\Models\DetailPermintaan;
 use App\Models\Barang;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class PermintaanController extends Controller
 {
+    
     public function index(Request $request)
     {
-        $query = Permintaan::query();
-        
+        // Filter berdasarkan role: jika user adalah Klien, hanya tampilkan permintaannya sendiri
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $userId = $user->id;
 
+        $query = Permintaan::query();
+
+        if ($user && $user->role === 'Klien') {
+            $query->where('user_id', $userId);
+        }
+        
         if ($request->filterType == 'tanggal' && $request->filled('tgl_permintaan')) {
             $query->whereDate('tgl_permintaan', $request->tgl_permintaan);
         } elseif ($request->filterType == 'bulan' && $request->filled('bulan_permintaan')) {
@@ -47,60 +58,66 @@ class PermintaanController extends Controller
         if ($request->q) {
             $query->where('nama_barang', 'like', '%' . $request->q . '%');
         }
-        $barangs = $query->get();
+
+        //Hanya barang dengan stok > 0 yang ditampilkan
+        $barangs = $query->where('stok', '>', 0)->get();
 
         return view('permintaan.create', compact('newIdPermintaan', 'barangs'));
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'barang.*.id_barang' => 'required|exists:barangs,id_barang',
-        'barang.*.jumlah' => 'required|integer|min:1',
-        'barang.*.satuan'    => 'required|string',
-        'id_permintaan' => 'required|unique:permintaans,id_permintaan',
-        'nama_pemesan' => 'required|string|max:255',
-        'alamat' => 'required|string',
-        'tgl_permintaan' => 'required|date',
-    ]);
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
-    $permintaan = Permintaan::create([
-        'id_permintaan' => $request->id_permintaan,
-        'nama_pemesan' => $request->nama_pemesan,
-        'alamat' => $request->alamat,
-        'tgl_permintaan' => $request->tgl_permintaan,
-        'status' => 'Menunggu Persetujuan',
-        'total_bayar' => 0,
-    ]);
-
-    $totalBayar = 0;
-    $totalJumlah = 0;
-
-    foreach ($request->barang as $item) {
-        $barang = Barang::where('id_barang', $item['id_barang'])->first();
-        $jumlah = $item['jumlah'];
-        $satuan = $item['satuan'];
-        $total_harga = $barang->harga * $jumlah;
-
-        DetailPermintaan::create([
-            'id_permintaan' => $permintaan->id_permintaan,
-            'id_barang' => $item['id_barang'],
-            'jumlah' => $jumlah,
-            'satuan' => $satuan,
-            'total_harga' => $total_harga,
+        $request->validate([
+            'barang.*.id_barang' => 'required|exists:barangs,id_barang',
+            'barang.*.jumlah' => 'required|integer|min:1',
+            'barang.*.satuan'    => 'required|string',
+            'id_permintaan' => 'required|unique:permintaans,id_permintaan',
+            'nama_pemesan' => 'required|string|max:255',
+            'alamat' => 'required|string',
+            'tgl_permintaan' => 'required|date',
         ]);
 
-        $totalBayar += $total_harga;
-        $totalJumlah += $jumlah;
+        $permintaan = Permintaan::create([
+            'id_permintaan' => $request->id_permintaan,
+            'user_id' => $user->id,
+            'nama_pemesan' => $request->nama_pemesan,
+            'alamat' => $request->alamat,
+            'tgl_permintaan' => $request->tgl_permintaan,
+            'status' => 'Menunggu Persetujuan',
+            'total_bayar' => 0,
+        ]);
+
+        $totalBayar = 0;
+        $totalJumlah = 0;
+
+        foreach ($request->barang as $item) {
+            $barang = Barang::where('id_barang', $item['id_barang'])->first();
+            $jumlah = $item['jumlah'];
+            $satuan = $item['satuan'];
+            $total_harga = $barang->harga * $jumlah;
+
+            DetailPermintaan::create([
+                'id_permintaan' => $permintaan->id_permintaan,
+                'id_barang' => $item['id_barang'],
+                'jumlah' => $jumlah,
+                'satuan' => $satuan,
+                'total_harga' => $total_harga,
+            ]);
+
+            $totalBayar += $total_harga;
+            $totalJumlah += $jumlah;
+        }
+
+        $permintaan->update([
+            'jumlah' => $totalJumlah,
+            'total_bayar' => $totalBayar,
+        ]);
+
+        return redirect()->route('permintaan.index')->with('success', 'Data permintaan berhasil ditambahkan.');
     }
-
-    $permintaan->update([
-        'jumlah' => $totalJumlah,
-        'total_bayar' => $totalBayar,
-    ]);
-
-    return redirect()->route('permintaan.index')->with('success', 'Data permintaan berhasil ditambahkan.');
-}
 
 
     public function show(Permintaan $permintaan)

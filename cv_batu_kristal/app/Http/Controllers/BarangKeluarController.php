@@ -9,20 +9,54 @@ use App\Models\Permintaan;
 use App\Models\DetailPermintaan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class BarangKeluarController extends Controller
 {
     public function index(Request $request)
     {
-        $query = BarangKeluar::query();
+        // Buat otomatis barang keluar dari permintaan yang sudah disetujui
+        $permintaansDisetujui = Permintaan::with('detailPermintaan')
+            ->where('status', 'Disetujui')
+            ->get();
+
+        foreach ($permintaansDisetujui as $permintaan) {
+            $sudahAda = BarangKeluar::where('id_permintaan', $permintaan->id_permintaan)->exists();
+
+            if (!$sudahAda) {
+                // Generate ID Keluar otomatis
+                $last = BarangKeluar::orderBy('id_keluar', 'desc')->first();
+                $nextNumber = ($last && preg_match('/K(\\d+)/', $last->id_keluar, $m)) ? intval($m[1]) + 1 : 1;
+                $id_keluar = 'K' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+
+                // Simpan barang keluar
+                $barangKeluar = BarangKeluar::create([
+                    'id_keluar' => $id_keluar,
+                    'id_permintaan' => $permintaan->id_permintaan,
+                    'tgl_keluar' => Carbon::now(),
+                ]);
+
+                // Simpan detail barang keluar
+                foreach ($permintaan->detailPermintaan as $detail) {
+                    DetailBarangKeluar::create([
+                        'id_keluar' => $id_keluar,
+                        'id_barang' => $detail->id_barang,
+                        'jumlah' => $detail->jumlah,
+                        'satuan' => $detail->satuan,
+                    ]);
+                }
+            }
+        }
+
+        // Filter hasil
+        $query = BarangKeluar::with(['permintaan', 'detailBarangKeluar.barang']);
 
         if ($request->filterType == 'tanggal' && $request->filled('tgl_keluar')) {
             $query->whereDate('tgl_keluar', $request->tgl_keluar);
         } elseif ($request->filterType == 'bulan' && $request->filled('bulan_keluar')) {
             $bulan = substr($request->bulan_keluar, 5, 2);
             $tahun = substr($request->bulan_keluar, 0, 4);
-            $query->whereMonth('tgl_keluar', $bulan)
-                  ->whereYear('tgl_keluar', $tahun);
+            $query->whereMonth('tgl_keluar', $bulan)->whereYear('tgl_keluar', $tahun);
         } elseif ($request->filterType == 'tahun' && $request->filled('tahun_keluar')) {
             $query->whereYear('tgl_keluar', $request->tahun_keluar);
         }
@@ -31,6 +65,7 @@ class BarangKeluarController extends Controller
 
         return view('barang_keluar.index', compact('barangKeluars'));
     }
+
 
     public function create()
     {

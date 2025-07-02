@@ -28,7 +28,7 @@
             <form action="{{ route('permintaan.store') }}" method="POST">
                 @csrf
                 <div class="mb-3">
-                    <label class="form-label">ID Permintaan</label>
+                    <label class="form-label">ID Pemesanan</label>
                     <input type="text" class="form-control" name="id_permintaan" value="{{ $newIdPermintaan }}" readonly required>
                 </div>
                 <div class="mb-3">

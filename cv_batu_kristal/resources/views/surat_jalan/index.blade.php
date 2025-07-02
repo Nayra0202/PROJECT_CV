@@ -5,7 +5,6 @@
     <div class="card">
         <div class="card-header fw-bold d-flex justify-content-between align-items-center">
             Daftar Surat Jalan
-            <a href="{{ route('surat_jalan.create') }}" class="btn btn-primary btn-sm">Buat Surat Jalan</a>
         </div>
         <div class="card-body">
             @if(session('success'))

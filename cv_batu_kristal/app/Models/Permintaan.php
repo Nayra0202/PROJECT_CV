@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\User;
 
 class Permintaan extends Model
 {
@@ -22,6 +23,11 @@ class Permintaan extends Model
         'status',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     // Relasi ke barang (jika ada model Barang)
     public function barang(): BelongsTo
     {
@@ -32,5 +38,10 @@ class Permintaan extends Model
     public function detailPermintaan()
     {
         return $this->hasMany(DetailPermintaan::class, 'id_permintaan', 'id_permintaan');
+    }
+    
+    public function barangKeluar()
+    {
+        return $this->hasOne(BarangKeluar::class, 'id_permintaan', 'id_permintaan');
     }
 }
