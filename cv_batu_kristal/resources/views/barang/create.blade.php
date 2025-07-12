@@ -44,7 +44,7 @@
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="gambar" class="form-label">Gambar Barang (opsional)</label>
+                    <label for="gambar" class="form-label">Gambar Barang</label>
                     <input type="file" class="form-control" id="gambar" name="gambar" accept="image/*">
                 </div>
                 <div class="mb-3">

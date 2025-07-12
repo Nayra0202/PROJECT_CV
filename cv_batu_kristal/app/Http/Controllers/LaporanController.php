@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Barang;
+use App\Models\Pemesanan;
 use App\Models\Permintaan;
 
 class LaporanController extends Controller
@@ -87,20 +88,20 @@ if (
         $bulan = $request->bulan;
         $tahun = $request->tahun;
 
-        $permintaans = Permintaan::with('detailPermintaan.barang');
+        $pemesanans = Pemesanan::with('detailPermintaan.barang');
 
         if ($filterType == 'tanggal' && $tanggal) {
-            $permintaans->whereDate('tanggal', $tanggal);
+            $pemesanans->whereDate('tanggal', $tanggal);
         }
         if ($filterType == 'bulan' && $bulan) {
             [$tahunBulan, $bulanBulan] = explode('-', $bulan);
-            $permintaans->whereYear('tanggal', $tahunBulan)->whereMonth('tanggal', $bulanBulan);
+            $pemesanans->whereYear('tanggal', $tahunBulan)->whereMonth('tanggal', $bulanBulan);
         }
         if ($filterType == 'tahun' && $tahun) {
-            $permintaans->whereYear('tanggal', $tahun);
+            $pemesanans->whereYear('tanggal', $tahun);
         }
 
-        $permintaans = $permintaans->get();
+        $permintaans = $pemesanans->get();
 
         return view('laporan.permintaan', compact('permintaans', 'filterType', 'tanggal', 'bulan', 'tahun'));
     }
@@ -132,7 +133,7 @@ if (
         $filter = $request->filter;
         $value = $request->value;
 
-        $permintaans = Permintaan::query();
+        $permintaans = Pemesanan::query();
 
         if ($filter && $value) {
             if ($filter === 'tanggal') {
@@ -154,7 +155,7 @@ if (
         $filter = $request->filter;
         $value = $request->value;
 
-        $permintaans = \App\Models\Permintaan::with('detailPermintaan.barang');
+        $permintaans = \App\Models\Pemesanan::with('detailPermintaan.barang');
 
         if ($filter && $value) {
             if ($filter === 'tanggal') {
@@ -173,7 +174,7 @@ if (
 
     public function index(Request $request)
     {
-        $query = Permintaan::query();
+        $query = Pemesanan::query();
 
         if ($request->tanggal) {
             $query->whereDate('tanggal_permintaan', $request->tanggal);

@@ -6,27 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('detail_barang_keluars', function (Blueprint $table) {
-            $table->string('id_detail_keluar')->primary();
-            $table->string('id_keluar');
-            $table->string('id_barang');
+            $table->bigIncrements('id_detail_keluar');
+            $table->string('id_keluar', 10);            // FK ke barang_keluars
+            $table->string('id_pemesanan', 10);         // ✅ Tambahan FK ke pemesanans
+            $table->string('id_barang', 10);            // FK ke barangs
             $table->integer('jumlah');
-            $table->string('satuan');
+            $table->string('satuan', 255);
+            $table->timestamps();
 
             $table->foreign('id_keluar')->references('id_keluar')->on('barang_keluars')->onDelete('cascade');
+            $table->foreign('id_pemesanan')->references('id_pemesanan')->on('pemesanans')->onDelete('cascade');
             $table->foreign('id_barang')->references('id_barang')->on('barangs')->onDelete('cascade');
-            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('detail_barang_keluars');

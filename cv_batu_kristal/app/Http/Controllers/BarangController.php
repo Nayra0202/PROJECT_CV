@@ -79,7 +79,6 @@ class BarangController extends Controller
             'keterangan'    => $request->keterangan ?? 'Menunggu Persetujuan',
             'tgl_input'     => now(),
             'tgl_disetujui' => null,
-            'id_user'       => Auth::id(),
         ]);
 
         return redirect()->route('barang.index')->with('success', 'Data barang berhasil ditambahkan.');

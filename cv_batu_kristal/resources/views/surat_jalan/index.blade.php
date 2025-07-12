@@ -55,21 +55,21 @@
                             <td>{{ $sj->alamat }}</td>
                             <td>
                                 <ul class="list-unstyled mb-0">
-                                    @foreach($sj->permintaan->detailPermintaan as $detail)
+                                    @foreach($sj->pemesanan->detailPemesanan as $detail)
                                         <li>{{ $detail->barang->nama_barang ?? '-' }}</li>
                                     @endforeach
                                 </ul>
                             </td>
                             <td>
                                 <ul class="list-unstyled mb-0">
-                                    @foreach($sj->permintaan->detailPermintaan as $detail)
+                                    @foreach($sj->pemesanan->detailPemesanan as $detail)
                                         <li>{{ $detail->jumlah }}</li>
                                     @endforeach
                                 </ul>
                             </td>
                             <td>
                                 <ul class="list-unstyled mb-0">
-                                    @foreach($sj->permintaan->detailPermintaan as $detail)
+                                    @foreach($sj->pemesanan->detailPemesanan as $detail)
                                         <li>{{ $detail->satuan }}</li>
                                     @endforeach
                                 </ul>
@@ -81,7 +81,7 @@
                                 </a>
 
                                 {{-- Tombol Hapus --}}
-                                <form action="{{ route('surat_jalan.destroy', $sj->id_surat_jalan) }}" method="POST" onsubmit="return confirm('Yakin ingin hapus semua barang di permintaan ini?')" style="display:inline;">
+                                <form action="{{ route('surat_jalan.destroy', $sj->id_surat_jalan) }}" method="POST" onsubmit="return confirm('Yakin ingin hapus semua barang di pemesanan ini?')" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm p-1" title="Hapus">

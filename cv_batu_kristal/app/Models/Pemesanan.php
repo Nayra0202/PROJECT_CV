@@ -6,19 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
 
-class Permintaan extends Model
+class Pemesanan extends Model
 {
-    protected $table = 'permintaans'; // atau sesuaikan dengan nama tabel di migration
+    protected $table = 'pemesanans'; // atau sesuaikan dengan nama tabel di migration
 
-    protected $primaryKey = 'id_permintaan';
+    protected $primaryKey = 'id_pemesanan';
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
-        'id_permintaan',
+        'id_pemesanan',
+        'user_id',
         'nama_pemesan',
         'alamat',
-        'tgl_permintaan',
+        'tgl_pemesanan',
         'total_bayar',
         'status',
     ];
@@ -34,14 +35,14 @@ class Permintaan extends Model
         return $this->belongsTo(Barang::class, 'id_barang', 'id_barang');
     }
 
-    // Relasi ke detail_permintaan
-    public function detailPermintaan()
+    // Relasi ke detail_pemesanan
+    public function detailPemesanan()
     {
-        return $this->hasMany(DetailPermintaan::class, 'id_permintaan', 'id_permintaan');
+        return $this->hasMany(DetailPemesanan::class, 'id_pemesanan', 'id_pemesanan');
     }
     
     public function barangKeluar()
     {
-        return $this->hasOne(BarangKeluar::class, 'id_permintaan', 'id_permintaan');
+        return $this->hasOne(BarangKeluar::class, 'id_pemesanan', 'id_pemesanan');
     }
 }

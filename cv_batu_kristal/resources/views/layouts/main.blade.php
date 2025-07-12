@@ -45,7 +45,7 @@
             {{-- Klien: Dashboard & Pemesanan --}}
             @if(auth()->user()->role == 'Klien')
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ route('permintaan.index') }}">
+                    <a class="sidebar-link" href="{{ route('pemesanan.index') }}">
                         <span><i class="ti ti-cards"></i></span>
                         <span class="hide-menu">Pemesanan</span>
                     </a>
@@ -61,7 +61,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ route('permintaan.index') }}">
+                    <a class="sidebar-link" href="{{ route('pemesanan.index') }}">
                         <span><i class="ti ti-cards"></i></span>
                         <span class="hide-menu">Pemesanan</span>
                     </a>
@@ -73,7 +73,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ route('laporan.permintaan') }}">
+                    <a class="sidebar-link" href="{{ route('laporan.pemesanan') }}">
                         <span><i class="ti ti-file-invoice"></i></span>
                         <span class="hide-menu">Laporan Pemesanan</span>
                     </a>
@@ -89,7 +89,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ route('laporan.permintaan') }}">
+                    <a class="sidebar-link" href="{{ route('laporan.pemesanan') }}">
                         <span><i class="ti ti-file-invoice"></i></span>
                         <span class="hide-menu">Laporan Pemesanan</span>
                     </a>
@@ -105,7 +105,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ route('permintaan.index') }}">
+                    <a class="sidebar-link" href="{{ route('pemesanan.index') }}">
                         <span><i class="ti ti-cards"></i></span>
                         <span class="hide-menu">Pemesanan</span>
                     </a>
@@ -121,7 +121,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ route('permintaan.index') }}">
+                    <a class="sidebar-link" href="{{ route('pemesanan.index') }}">
                         <span><i class="ti ti-cards"></i></span>
                         <span class="hide-menu">Pemesanan</span>
                     </a>
@@ -133,7 +133,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ route('laporan.permintaan') }}">
+                    <a class="sidebar-link" href="{{ route('laporan.pemesanan') }}">
                         <span><i class="ti ti-file-invoice"></i></span>
                         <span class="hide-menu">Laporan Pemesanan</span>
                     </a>
@@ -171,7 +171,7 @@
             {{-- Bagian Pengiriman: Dashboard, Pemesanan, Surat Jalan --}}
             @if(auth()->user()->role == 'Bagian Pengiriman')
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ route('permintaan.index') }}">
+                    <a class="sidebar-link" href="{{ route('pemesanan.index') }}">
                         <span><i class="ti ti-cards"></i></span>
                         <span class="hide-menu">Pemesanan</span>
                     </a>
@@ -194,12 +194,6 @@
             <li class="nav-item d-block d-xl-none">
               <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
                 <i class="ti ti-menu-2"></i>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link nav-icon-hover" href="javascript:void(0)">
-                <i class="ti ti-bell-ringing"></i>
-                <div class="notification bg-primary rounded-circle"></div>
               </a>
             </li>
           </ul>
@@ -237,9 +231,10 @@
         </nav>
       </header>
       <!--  Header End -->
-      @if(Route::currentRouteName() == 'dashboard')
+      
       
   <div class="container-fluid">
+    @if(Route::currentRouteName() == 'dashboard')
     <div class="row mb-4">
       <div class="col-12">
         <div class="card bg-primary text-white shadow">
@@ -255,11 +250,8 @@
         </div>
       </div>
     </div>
-  </div>
 @endif
 
-{{-- Tempat semua konten halaman tampil --}}
-<div class="container-fluid">
   @yield('content')
 </div>
 

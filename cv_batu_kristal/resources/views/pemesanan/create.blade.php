@@ -25,11 +25,11 @@
         @endif
 
         <div class="card-body">
-            <form action="{{ route('permintaan.store') }}" method="POST">
+            <form action="{{ route('pemesanan.store') }}" method="POST">
                 @csrf
                 <div class="mb-3">
                     <label class="form-label">ID Pemesanan</label>
-                    <input type="text" class="form-control" name="id_permintaan" value="{{ $newIdPermintaan }}" readonly required>
+                    <input type="text" class="form-control" name="id_pemesanan" value="{{ $newIdPemesanan }}" readonly required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Nama Pemesan</label>
@@ -41,7 +41,7 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Tanggal Pemesanan</label>
-                    <input type="date" class="form-control" name="tgl_permintaan" value="{{ date('Y-m-d') }}" required>
+                    <input type="date" class="form-control" name="tgl_pemesanan" value="{{ date('Y-m-d') }}" required>
                 </div>
 
                 <hr>
@@ -88,7 +88,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary">Simpan</button>
-                <a href="{{ route('permintaan.index') }}" class="btn btn-secondary">Batal</a>
+                <a href="{{ route('pemesanan.index') }}" class="btn btn-secondary">Batal</a>
             </form>
         </div>
     </div>

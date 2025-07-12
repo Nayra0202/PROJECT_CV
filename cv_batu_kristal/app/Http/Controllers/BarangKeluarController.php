@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\BarangKeluar;
 use App\Models\Barang;
 use App\Models\DetailBarangKeluar;
-use App\Models\Permintaan;
-use App\Models\DetailPermintaan;
+use App\Models\Pemesanan;
+use App\Models\DetailPemesanan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -15,13 +15,13 @@ class BarangKeluarController extends Controller
 {
     public function index(Request $request)
     {
-        // Buat otomatis barang keluar dari permintaan yang sudah disetujui
-        $permintaansDisetujui = Permintaan::with('detailPermintaan')
+        // Buat otomatis barang keluar dari pemesanan yang sudah disetujui
+        $pemesananDisetujui = Pemesanan::with('detailPemesanan')
             ->where('status', 'Disetujui')
             ->get();
 
-        foreach ($permintaansDisetujui as $permintaan) {
-            $sudahAda = BarangKeluar::where('id_permintaan', $permintaan->id_permintaan)->exists();
+        foreach ($pemesananDisetujui as $pemesanan) {
+            $sudahAda = BarangKeluar::where('id_pemesanan', $pemesanan->id_pemesanan)->exists();
 
             if (!$sudahAda) {
                 // Generate ID Keluar otomatis
@@ -32,12 +32,12 @@ class BarangKeluarController extends Controller
                 // Simpan barang keluar
                 $barangKeluar = BarangKeluar::create([
                     'id_keluar' => $id_keluar,
-                    'id_permintaan' => $permintaan->id_permintaan,
+                    'id_pemesanan' => $pemesanan->id_pemesanan,
                     'tgl_keluar' => Carbon::now(),
                 ]);
 
                 // Simpan detail barang keluar
-                foreach ($permintaan->detailPermintaan as $detail) {
+                foreach ($pemesanan->detailPemesanan as $detail) {
                     DetailBarangKeluar::create([
                         'id_keluar' => $id_keluar,
                         'id_barang' => $detail->id_barang,
@@ -49,7 +49,7 @@ class BarangKeluarController extends Controller
         }
 
         // Filter hasil
-        $query = BarangKeluar::with(['permintaan', 'detailBarangKeluar.barang']);
+        $query = BarangKeluar::with(['pemesanan', 'detailBarangKeluar.barang']);
 
         if ($request->filterType == 'tanggal' && $request->filled('tgl_keluar')) {
             $query->whereDate('tgl_keluar', $request->tgl_keluar);
@@ -70,10 +70,10 @@ class BarangKeluarController extends Controller
     public function create()
     {
         // Ambil id_permintaan yang sudah digunakan di tabel barang_keluars
-        $usedPermintaanIds = BarangKeluar::pluck('id_permintaan');
+        $usedPemesananIds = BarangKeluar::pluck('id_pemesanan');
 
-        $permintaans = Permintaan::with('detailPermintaan.barang')
-                ->whereNotIn('id_permintaan', $usedPermintaanIds)
+        $pemesanan = Pemesanan::with('detailPemesanan.barang')
+                ->whereNotIn('id_pemesanan', $usedPemesananIds)
                 ->get();
 
         // Membuat ID Keluar otomatis
@@ -85,19 +85,19 @@ class BarangKeluarController extends Controller
         }
         $newIdKeluar = 'K' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
-        return view('barang_keluar.create', compact('permintaans', 'newIdKeluar'));
+        return view('barang_keluar.create', compact('pemesanans', 'newIdKeluar'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'id_keluar' => 'required|unique:barang_keluars,id_keluar',
-            'id_permintaan' => [
+            'id_pemesanan' => [
                 'required',
-                'exists:permintaans,id_permintaan',
+                'exists:pemesanans,id_pemesanan',
                 function ($attribute, $value, $fail) {
-                    if (\App\Models\BarangKeluar::where('id_permintaan', $value)->exists()) {
-                        $fail('Permintaan ini sudah digunakan untuk barang keluar.');
+                    if (\App\Models\BarangKeluar::where('id_pemesanan', $value)->exists()) {
+                        $fail('Pemesanan ini sudah digunakan untuk barang keluar.');
                     }
                 },
             ],
@@ -111,7 +111,7 @@ class BarangKeluarController extends Controller
             // Simpan ke tabel barang_keluars (header)
             $barangKeluar = BarangKeluar::create([
                 'id_keluar' => $request->id_keluar,
-                'id_permintaan' => $request->id_permintaan,
+                'id_pemesanan' => $request->id_pemesanan,
                 'tgl_keluar' => now(),
             ]);
 
@@ -131,13 +131,13 @@ class BarangKeluarController extends Controller
 
     public function show(BarangKeluar $barangKeluar)
     {
-        $barangKeluar->load('detailBarangKeluar.barang', 'permintaan');
+        $barangKeluar->load('detailBarangKeluar.barang', 'pemesanan');
         return view('barang_keluar.show', compact('barangKeluar'));
     }
 
     public function edit(BarangKeluar $barangKeluar)
     {
-        $barangKeluar->load('detailBarangKeluar.barang','permintaan');
+        $barangKeluar->load('detailBarangKeluar.barang','pemesanan');
         return view('barang_keluar.edit', compact('barangKeluar'));
     }
 
@@ -165,10 +165,10 @@ class BarangKeluarController extends Controller
     }
 
     // AJAX API (jika dipakai)
-    public function getBarangByPermintaan($id)
+    public function getBarangByPemesanan($id)
     {
-        $detailPermintaans = DetailPermintaan::with('barang')
-            ->where('id_permintaan', $id)
+        $detailPemesanans = DetailPemesanan::with('barang')
+            ->where('id_pemesanan', $id)
             ->get()
             ->map(function($item) {
                 return [
@@ -179,6 +179,6 @@ class BarangKeluarController extends Controller
                 ];
             });
 
-        return response()->json($detailPermintaans);
+        return response()->json($detailPemesanans);
     }
 }

@@ -14,12 +14,12 @@
                     <input type="text" name="id_surat_jalan" id="id_surat_jalan" class="form-control" value="{{ $newId }}" readonly>
                 </div>
                 <div class="mb-3">
-                    <label for="id_permintaan" class="form-label">Pilih Pemesanan</label>
-                    <select class="form-select" id="id_permintaan" name="id_permintaan" required>
+                    <label for="id_pemesanan" class="form-label">Pilih Pemesanan</label>
+                    <select class="form-select" id="id_pemesanan" name="id_pemesanan" required>
                         <option value="">-- Pilih Pemesanan --</option>
-                        @foreach($permintaans as $permintaan)
-                            <option value="{{ $permintaan->id_permintaan }}">
-                                {{ $permintaan->nama_pemesan }} - Permintaan #{{ $permintaan->id_permintaan }}
+                        @foreach($pemesanans as $pemesanan)
+                            <option value="{{ $pemesanan->id_pemesanan }}">
+                                {{ $pemesanan->nama_pemesan }} - Pemesanan #{{ $pemesanan->id_pemesanan }}
                             </option>
                         @endforeach
                     </select>

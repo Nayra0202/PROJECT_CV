@@ -12,12 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('barang_masuks', function (Blueprint $table) {
-            $table->string('id_masuk')->primary();
-            $table->string('id_barang');
+            $table->string('id_masuk', 10)->primary();
             $table->date('tgl_masuk');
             $table->timestamps();
-
-            $table->foreign('id_barang')->references('id_barang')->on('barangs')->onDelete('cascade');
         });
     }
 

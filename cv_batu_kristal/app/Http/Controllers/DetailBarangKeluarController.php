@@ -41,10 +41,13 @@ class DetailBarangKeluarController extends Controller
             'details.*.satuan' => 'required|string|max:50',
         ]);
 
+        $barangKeluar = BarangKeluar::where('id_keluar', $request->id_keluar)->first(); 
+        
         foreach ($request->details as $detail) {
             // Simpan detail
             DetailBarangKeluar::create([
                 'id_keluar' => $request->id_keluar,
+                'id_pemesanan' => $barangKeluar->id_pemesanan,
                 'id_barang' => $detail['id_barang'],
                 'jumlah' => $detail['jumlah'],
                 'satuan' => $detail['satuan'],

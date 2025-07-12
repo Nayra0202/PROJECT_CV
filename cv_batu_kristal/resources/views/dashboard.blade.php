@@ -28,13 +28,13 @@
 </div>
 
 @if(auth()->user()->role != 'Klien')
-<!-- Tabel Permintaan Terbaru dan Ringkasan Data -->
+<!-- Tabel Pemesanan Terbaru dan Ringkasan Data -->
 <div class="row">
-  <!-- Card 1: Tabel Permintaan Terbaru -->
+  <!-- Card 1: Tabel Pemesanan Terbaru -->
   <div class="col-lg-8 mb-4">
     <div class="card mb-4">
       <div class="card-header">
-        <h5 class="mb-0">Tabel Permintaan Terbaru</h5>
+        <h5 class="mb-0">Tabel Pemesanan Terbaru</h5>
       </div>
       <div class="card-body">
         <div class="table-responsive">
@@ -42,24 +42,24 @@
             <thead>
               <tr>
                 <th>No</th>
-                <th>ID Permintaan</th>
-                <th>Tanggal Permintaan</th>
+                <th>ID Pemesanan</th>
+                <th>Tanggal Pemesanan</th>
                 <th>Nama Peminta</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              @forelse($permintaans as $i => $permintaan)
+              @forelse($pemesanans as $i => $pemesanan)
                 <tr>
                   <td>{{ $i + 1 }}</td>
-                  <td>{{ $permintaan->id_permintaan }}</td>
-                  <td>{{ $permintaan->tgl_permintaan }}</td>
-                  <td>{{ $permintaan->nama_pemesan ?? '-' }}</td>
-                  <td>{{ $permintaan->status ?? '-' }}</td>
+                  <td>{{ $pemesanan->id_pemesanan }}</td>
+                  <td>{{ $pemesanan->tgl_pemesanan }}</td>
+                  <td>{{ $pemesanan->nama_pemesan ?? '-' }}</td>
+                  <td>{{ $pemesanan->status ?? '-' }}</td>
                 </tr>
               @empty
                 <tr>
-                  <td colspan="5" class="text-center">Belum ada data permintaan.</td>
+                  <td colspan="5" class="text-center">Belum ada data pemesanan.</td>
                 </tr>
               @endforelse
             </tbody>
@@ -77,13 +77,20 @@
       </div>
       <div class="card-body">
         <ul class="list-group list-group-flush">
+          @if(auth()->user()->role == 'Direktur')
+<li class="list-group-item d-flex justify-content-between align-items-center">
+  Barang Belum Disetujui
+  <span class="badge bg-secondary rounded-pill">{{ $barangBelumDisetujui }}</span>
+</li>
+@endif
+
           <li class="list-group-item d-flex justify-content-between align-items-center">
             Pemesanan Baru
             <span class="badge bg-danger rounded-pill">{{ $pemesananBaru }}</span>
           </li>
           <li class="list-group-item d-flex justify-content-between align-items-center">
             Total Pemesanan
-            <span class="badge bg-primary rounded-pill">{{ $totalPermintaan }}</span>
+            <span class="badge bg-primary rounded-pill">{{ $totalPemesanan }}</span>
           </li>
           <li class="list-group-item d-flex justify-content-between align-items-center">
             Total Barang
@@ -104,7 +111,7 @@
 </div>
 @endif
 
-<h4 class="fw-bold px-4">--- KATALOG BARANG ---</h4>
+<h4 class="fw-bold px-4 text-center">--- KATALOG BARANG ---</h4>
 <div class="row g-4 px-4 py-3" id="katalog-barang">
   @foreach($barangs as $i => $barang)
     @if($barang->status != 'Menunggu Persetujuan')
@@ -119,9 +126,6 @@
         <h6 class="fw-semibold fs-4">{{ $barang->nama_barang }}</h6>
         <div class="d-flex align-items-center justify-content-between">
           <h6 class="fw-semibold fs-4 mb-0">Rp. {{ number_format($barang->harga, 0, ',', '.') }}</h6>
-          <a href="{{ url('/permintaan/create') }}" class="btn btn-sm btn-primary mt-2">
-            <img src="{{ asset('images/icons/plus.png') }}" alt="Edit" width="20" height="20">
-          </a>
         </div>
         <p class="mb-1 text-muted">Stok: {{ $barang->stok }}</p> {{-- Tambahan baris ini --}}
       </div>

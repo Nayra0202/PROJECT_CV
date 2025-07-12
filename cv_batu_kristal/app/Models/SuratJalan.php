@@ -14,7 +14,7 @@ class SuratJalan extends Model
 
     protected $fillable = [
         'id_surat_jalan',
-        'id_permintaan',
+        'id_pemesanan',
         'tanggal',
         'nama_pemesan',
         'alamat',
@@ -23,10 +23,10 @@ class SuratJalan extends Model
         'satuan',
     ];
 
-    // Relasi ke Permintaan
-    public function permintaan(): BelongsTo
+    // Relasi ke pemesanan
+    public function pemesanan(): BelongsTo
     {
-        return $this->belongsTo(Permintaan::class, 'id_permintaan');
+        return $this->belongsTo(Pemesanan::class, 'id_pemesanan');
     }
 
     public function detailBarang()

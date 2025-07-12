@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('barang_keluars', function (Blueprint $table) {
-            $table->string('id_keluar')->primary();
-            $table->string('id_permintaan');
+            $table->string('id_keluar', 10)->primary();
+            $table->string('id_pemesanan', 10);
             $table->date('tgl_keluar');
             $table->timestamps();
 
-            // Foreign key ke tabel permintaans (kolom id_permintaan)
-            $table->foreign('id_permintaan')->references('id_permintaan')->on('permintaans')->onDelete('cascade');
+            // FK ke pemesanans (bukan permintaans)
+            $table->foreign('id_pemesanan')->references('id_pemesanan')->on('pemesanans')->onDelete('cascade');
         });
     }
 

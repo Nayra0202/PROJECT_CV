@@ -25,14 +25,8 @@ class Barang extends Model
         'keterangan',
         'tgl_input',
         'tgl_disetujui',
-        'id_user',
     ];
 
-    // Jika ingin relasi ke User:
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'id_user');
-    }
     public function barangMasuk()
     {
         return $this->hasMany(BarangMasuk::class, 'id_barang', 'id_barang');

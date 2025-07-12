@@ -51,7 +51,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($suratJalan->permintaan->detailPermintaan as $detail)
+            @foreach ($suratJalan->pemesanan->detailPemesanan as $detail)
                 <tr>
                     <td>{{ $detail->jumlah }} {{ $detail->satuan }}</td>
                     <td>{{ $detail->barang->nama_barang }}</td>
