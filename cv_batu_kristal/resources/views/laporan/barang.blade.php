@@ -20,13 +20,17 @@
                 <input type="number" id="inputTahun" name="tahun" class="form-control form-control-sm" style="width: 80px;" min="2000" max="2099" placeholder="Tahun" value="{{ request('tahun') }}" disabled>
                 <button type="submit" class="btn btn-sm btn-primary">Cari</button>
                 <a href="{{ route('laporan.barang') }}" class="btn btn-sm btn-secondary">Reset</a>
+                <a href="{{ route('laporan.barang.cetak', array_merge(request()->all(), ['download' => 0])) }}" 
+                    target="_blank" 
+                    class="btn btn-sm btn-danger">
+                    Cetak
+                </a>
             </form>
 
             <div class="table-responsive mt-3">
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>ID Pemesanan</th>
                             <th>ID Barang</th>
                             <th>Nama Barang</th>
                             <th>Stok Awal</th>
@@ -38,7 +42,6 @@
                     <tbody>
                         @forelse($laporan as $row)
                         <tr>
-                            <td>{{ $row['id_permintaan'] }}</td>
                             <td>{{ $row['id_barang']?? ''  }}</td>
                             <td>{{ $row['nama_barang'] }}</td>
                             <td>{{ $row['stok_awal'] ?? ''  }}</td>
@@ -49,7 +52,7 @@
                                 @endif
                             </td>
                             <td>
-                                {{ $row['tgl_keluar' ] ?? ''  }}
+                                {{ $row['tgl_keluar'] ?? ''  }}
                                 @if($row['jumlah_keluar'] > 0)
                                     • {{ $row['jumlah_keluar'] }} {{ $row['satuan'] }}
                                 @endif

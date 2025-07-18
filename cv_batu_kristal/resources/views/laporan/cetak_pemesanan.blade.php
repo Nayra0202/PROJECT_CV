@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cetak Laporan Permintaan</title>
+    <title>Cetak Laporan Pemesanan</title>
     <style>
         body {
             font-family: sans-serif;
@@ -75,7 +75,7 @@
         <p>JL. May Salim Batubara Gg. Nurul Iman 72/1844 RT 006/02 Sekip Jaya, Palembang</p>
     </div>
 
-    <h2 style="text-align: center; margin-top: 30px;">Laporan Permintaan Barang</h2>
+    <h2 style="text-align: center; margin-top: 30px;">Laporan Pemesanan Barang</h2>
 
     @if($filter && $value)
         <p class="filter-info"><strong>Filter:</strong> {{ ucfirst($filter) }} - {{ $value }}</p>
@@ -83,29 +83,30 @@
 
     <div class="tanggal-cetak">
         Tanggal : {{ \Carbon\Carbon::now()->format('d-m-Y') }} <br>
-        Waktu : {{ \Carbon\Carbon::now()->format('H:i') }}
     </div>
 
     <table>
         <thead>
             <tr>
                 <th>No</th>
-                <th>ID Permintaan</th>
+                <th>ID Pemesanan</th>
                 <th>Tanggal</th>
-                <th>Nama Peminta</th>
+                <th>Nama Pemesan</th>
+                <th>Alamat</th>
                 <th>Daftar Barang</th>
             </tr>
         </thead>
         <tbody>
-            @forelse ($permintaans as $key => $permintaan)
+            @forelse ($pemesanans as $key => $pemesanan)
             <tr>
                 <td>{{ $key + 1 }}</td>
-                <td>{{ $permintaan->id_permintaan }}</td>
-                <td>{{ \Carbon\Carbon::parse($permintaan->tanggal)->format('d-m-Y') }}</td>
-                <td>{{ $permintaan->nama_pemesan ?? '-' }}</td>
+                <td>{{ $pemesanan->id_pemesanan }}</td>
+                <td>{{ \Carbon\Carbon::parse($pemesanan->tanggal)->format('d-m-Y') }}</td>
+                <td>{{ $pemesanan->nama_pemesan ?? '-' }}</td>
+                <td>{{ $pemesanan->alamat ?? '-' }}</td>
                 <td>
                     <ul>
-                        @foreach ($permintaan->detailPermintaan as $detail)
+                        @foreach ($pemesanan->detailPemesanan as $detail)
                             <li>
                                 {{ $detail->barang->nama_barang ?? '-' }} - 
                                 {{ $detail->jumlah }} {{ $detail->barang->satuan ?? '' }}
@@ -113,7 +114,7 @@
                             </li>
                         @endforeach
                     </ul>
-                    <strong>Total Bayar: Rp{{ number_format($permintaan->total_bayar ?? 0, 0, ',', '.') }}</strong>
+                    <strong>Total Bayar: Rp{{ number_format($pemesanan->total_bayar ?? 0, 0, ',', '.') }}</strong>
                 </td>
             </tr>
             @empty

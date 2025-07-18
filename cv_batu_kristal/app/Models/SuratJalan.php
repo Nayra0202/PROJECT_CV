@@ -3,39 +3,35 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SuratJalan extends Model
 {
-    protected $table = 'surat_jalans'; // pastikan sesuai dengan nama tabel di migration
+    protected $table = 'surat_jalans';
 
-    protected $primaryKey = 'id_surat_jalan'; // sesuaikan dengan migration jika PK bukan 'id'
-    protected $keyType = 'string'; 
+    protected $primaryKey = 'id_surat_jalan';
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     protected $fillable = [
         'id_surat_jalan',
-        'id_pemesanan',
+        'id_keluar', // relasi ke barang keluar
         'tanggal',
         'nama_pemesan',
         'alamat',
-        'nama_barang',
-        'jumlah',
-        'satuan',
     ];
 
-    // Relasi ke pemesanan
-    public function pemesanan(): BelongsTo
+    /**
+     * Relasi ke BarangKeluar
+     */
+    public function barangKeluar(): BelongsTo
     {
-        return $this->belongsTo(Pemesanan::class, 'id_pemesanan');
+        return $this->belongsTo(BarangKeluar::class, 'id_keluar', 'id_keluar');
     }
 
-    public function detailBarang()
-    {
-        return $this->hasMany(DetailSuratJalan::class, 'id_surat_jalan');
-    }
+    /**
+     * Relasi ke DetailSuratJalan jika kamu pakai tabel itu
+     */
 
-    public function detailSuratJalan()
-    {
-        return $this->hasMany(DetailSuratJalan::class, 'id_surat_jalan');
-    }
 }

@@ -32,7 +32,7 @@
                         <tr>
                             <th>No</th>
                             <th>ID Keluar</th>
-                            <th>Detail Pemesanan</th>
+                            <th>ID Pemesanan</th>
                             <th>Daftar Barang</th>
                             <th>Tanggal Keluar</th>
                             <th>Aksi</th>
@@ -43,7 +43,7 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $barangKeluar->id_keluar }}</td>
-                            <td>{{ $barangKeluar->permintaan->id_permintaan }}</td>
+                            <td>{{ $barangKeluar->pemesanan->id_pemesanan }}</td>
                             <td>
                                 <ul class="mb-0">
                                     @foreach($barangKeluar->detailBarangKeluar as $detail)

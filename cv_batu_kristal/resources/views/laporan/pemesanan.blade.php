@@ -9,7 +9,7 @@
 
         <div>
         <div class="card-body">
-            <form id="filterForm" action="{{ route('laporan.permintaan') }}" method="GET" class="d-flex align-items-center gap-2">
+            <form id="filterForm" action="{{ route('laporan.pemesanan') }}" method="GET" class="d-flex align-items-center gap-2">
                 <label for="filterType" class="form-label me-2" style="min-width: 140px;">Pilih Berdasarkan</label>
                 <select id="filterType" name="filterType" class="form-select form-select-sm" style="width: 130px;">
                     <option value="">Filter</option>
@@ -17,12 +17,12 @@
                     <option value="bulan" {{ request('filterType') == 'bulan' ? 'selected' : '' }}>Bulan</option>
                     <option value="tahun" {{ request('filterType') == 'tahun' ? 'selected' : '' }}>Tahun</option>
                 </select>
-                <input type="date" id="inputTanggal" name="tanggal_permintaan" class="form-control form-control-sm" style="width: 130px;" value="{{ request('tanggal_permintaan') }}" disabled>
-                <input type="month" id="inputBulan" name="bulan_permintaan" class="form-control form-control-sm" style="width: 110px;" value="{{ request('bulan_permintaan') }}" disabled>
-                <input type="number" id="inputTahun" name="tahun_permintaan" class="form-control form-control-sm" style="width: 80px;" min="2000" max="2099" placeholder="Tahun" value="{{ request('tahun_permintaan') }}" disabled>
+                <input type="date" id="inputTanggal" name="tanggal_pemesanan" class="form-control form-control-sm" style="width: 130px;" value="{{ request('tanggal_pemesanan') }}" disabled>
+                <input type="month" id="inputBulan" name="bulan_pemesanan" class="form-control form-control-sm" style="width: 110px;" value="{{ request('bulan_pemesanan') }}" disabled>
+                <input type="number" id="inputTahun" name="tahun_pemesanan" class="form-control form-control-sm" style="width: 80px;" min="2000" max="2099" placeholder="Tahun" value="{{ request('tahun_pemesanan') }}" disabled>
                 <button type="submit" class="btn btn-sm btn-primary">Cari</button>
-                <a href="{{ route('laporan.permintaan') }}" class="btn btn-sm btn-secondary">Reset</a>
-                <a href="{{ route('laporan.permintaan.cetak', array_merge(request()->all(), ['download' => 0])) }}" 
+                <a href="{{ route('laporan.pemesanan') }}" class="btn btn-sm btn-secondary">Reset</a>
+                <a href="{{ route('laporan.pemesanan.cetak', array_merge(request()->all(), ['download' => 0])) }}" 
                     target="_blank" 
                     class="btn btn-sm btn-danger">
                     Cetak
@@ -43,16 +43,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($permintaans as $key => $permintaan)
+                        @forelse ($pemesanans as $key => $pemesanan)
                         <tr>
                             <td>{{ $key + 1 }}</td>
-                            <td>{{ $permintaan->id_permintaan }}</td>
-                            <td>{{ \Carbon\Carbon::parse($permintaan->tanggal)->format('d-m-Y') }}</td>
-                            <td>{{ $permintaan->nama_pemesan ?? '-' }}</td>
-                            <td>{{ $permintaan->alamat }}</td>
+                            <td>{{ $pemesanan->id_pemesanan }}</td>
+                            <td>{{ \Carbon\Carbon::parse($pemesanan->tanggal)->format('d-m-Y') }}</td>
+                            <td>{{ $pemesanan->nama_pemesan ?? '-' }}</td>
+                            <td>{{ $pemesanan->alamat }}</td>
                             <td>
                                 <ul class="mb-2 ps-3">
-                                    @foreach ($permintaan->detailPermintaan as $detail)
+                                    @foreach ($pemesanan->detailPemesanan as $detail)
                                         <li>
                                             {{ $detail->barang->nama_barang ?? '-' }} - 
                                             {{ $detail->jumlah }} {{ $detail->barang->satuan ?? '' }} 
@@ -60,12 +60,12 @@
                                         </li>
                                     @endforeach
                                 </ul>
-                                <strong>Total Bayar: Rp{{ number_format($permintaan->total_bayar ?? 0, 0, ',', '.') }}</strong>
+                                <strong>Total Bayar: Rp{{ number_format($pemesanan->total_bayar ?? 0, 0, ',', '.') }}</strong>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="text-center">Data permintaan belum tersedia.</td>
+                            <td colspan="6" class="text-center">Data pemesanan belum tersedia.</td>
                         </tr>
                         @endforelse
                     </tbody>

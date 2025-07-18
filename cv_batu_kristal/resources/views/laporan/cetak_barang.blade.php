@@ -71,25 +71,37 @@
     <table>
         <thead>
             <tr>
-                <th>No</th>
+                <th>ID Barang</th>
                 <th>Nama Barang</th>
-                <th>Satuan</th>
-                <th>Stok</th>
-                <th>Tanggal Input</th>
+                <th>Stok Awal</th>
+                <th>Tanggal Masuk • Jumlah Masuk</th>
+                <th>Tanggal Keluar • Jumlah Keluar</th>
+                <th>Stok Saat Ini</th>
             </tr>
         </thead>
         <tbody>
-            @forelse ($barangs as $barang)
+            @forelse ($laporan as $barang)
                 <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $barang->nama_barang }}</td>
-                    <td>{{ $barang->satuan }}</td>
-                    <td>{{ $barang->stok }}</td>
-                    <td>{{ \Carbon\Carbon::parse($barang->created_at)->format('d-m-Y') }}</td>
+                    <td>{{ $barang['id_barang'] }}</td>
+                    <td>{{ $barang['nama_barang'] }}</td>
+                    <td>{{ $barang['stok_awal'] }}</td>
+                    <td>
+                        {{ $barang['tgl_masuk'] ?? '' }}
+                        @if($barang['jumlah_masuk'] > 0)
+                            • {{ $barang['jumlah_masuk'] }} {{ $barang['satuan'] }}
+                        @endif
+                    </td>
+                    <td>
+                        {{ $barang['tgl_keluar'] ?? '' }}
+                        @if($barang['jumlah_keluar'] > 0)
+                            • {{ $barang['jumlah_keluar'] }} {{ $barang['satuan'] }}
+                        @endif
+                    </td>
+                    <td>{{ $barang['stok_akhir'] }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" style="text-align: center;">Tidak ada data</td>
+                    <td colspan="6" style="text-align: center;">Tidak ada data</td>
                 </tr>
             @endforelse
         </tbody>

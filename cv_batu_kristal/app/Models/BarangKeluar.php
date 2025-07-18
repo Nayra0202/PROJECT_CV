@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Barang;
-use App\Models\Permintaan;
+use App\Models\Pemesanan;
 use App\Models\DetailBarangKeluar;
 
 class BarangKeluar extends Model
@@ -17,7 +17,7 @@ class BarangKeluar extends Model
 
     protected $fillable = [
         'id_keluar',
-        'id_permintaan',
+        'id_pemesanan',
         'tgl_keluar',
     ];
 
@@ -28,9 +28,9 @@ class BarangKeluar extends Model
     }
 
     // Relasi ke tabel Permintaan
-    public function permintaan()
+    public function pemesanan()
     {
-        return $this->belongsTo(Permintaan::class, 'id_permintaan');
+        return $this->belongsTo(Pemesanan::class, 'id_pemesanan');
     }
 
     public function detailBarangKeluar()

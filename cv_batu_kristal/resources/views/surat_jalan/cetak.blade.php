@@ -51,10 +51,10 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($suratJalan->pemesanan->detailPemesanan as $detail)
+            @foreach ($suratJalan->barangKeluar->detailBarangKeluar as $detail)
                 <tr>
                     <td>{{ $detail->jumlah }} {{ $detail->satuan }}</td>
-                    <td>{{ $detail->barang->nama_barang }}</td>
+                    <td>{{ $detail->barang->nama_barang ?? '-' }}</td>
                     <td></td> <!-- Kosongkan harga kalau belum ada -->
                     <td></td> <!-- Kosongkan jumlah total kalau belum ada -->
                 </tr>

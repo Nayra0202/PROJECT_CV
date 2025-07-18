@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SuratJalan;
-use App\Models\Pemesanan;
 use App\Models\BarangKeluar;
-use App\Models\DetailBarangKeluar;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -13,32 +11,28 @@ class SuratJalanController extends Controller
 {
     public function index(Request $request)
     {
-        // Tambahkan otomatis surat jalan berdasarkan pemesanan disetujui dan belum ada surat jalan
-        $pemesanans = Pemesanan::with('barangKeluar.detailBarangKeluar')
-            ->where('status', 'Disetujui')
-            ->whereNotIn('id_pemesanan', SuratJalan::pluck('id_pemesanan'))
+        // Buat otomatis surat jalan berdasarkan barang keluar yang belum dibuatkan surat jalan
+        $barangKeluars = BarangKeluar::with('pemesanan')
+            ->whereNotIn('id_keluar', SuratJalan::pluck('id_keluar'))
             ->get();
 
-        foreach ($pemesanans as $pemesan) {
-            // Pastikan ada barang keluar
-            if ($pemesan->barangKeluar) {
-                $last = SuratJalan::orderBy('id_surat_jalan', 'desc')->first();
-                $nextNumber = ($last && preg_match('/SJ(\d+)/', $last->id_surat_jalan, $match)) ? intval($match[1]) + 1 : 1;
-                $newId = 'SJ' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        foreach ($barangKeluars as $barangKeluar) {
+            $last = SuratJalan::orderBy('id_surat_jalan', 'desc')->first();
+            $nextNumber = ($last && preg_match('/SJ(\d+)/', $last->id_surat_jalan, $match)) ? intval($match[1]) + 1 : 1;
+            $newId = 'SJ' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
-                SuratJalan::create([
-                    'id_surat_jalan' => $newId,
-                    'id_pemesanan' => $pemesan->id_pemesanan,
-                    'tanggal' => Carbon::now(),
-                    'nama_pemesan' => $pemesan->nama_pemesan,
-                    'alamat' => $pemesan->alamat,
-                ]);
-            }
+            SuratJalan::create([
+                'id_surat_jalan' => $newId,
+                'id_keluar' => $barangKeluar->id_keluar,
+                'tanggal' => Carbon::now(),
+                'nama_pemesan' => $barangKeluar->pemesanan->nama_pemesan ?? '-',
+                'alamat' => $barangKeluar->pemesanan->alamat ?? '-',
+            ]);
         }
 
-        $query = SuratJalan::query();
+        $query = SuratJalan::with('barangKeluar.pemesanan');
 
-        if ($request->filterType == 'tanggal' && $request->filled('tanggal')) {
+        if ($request->filterType == 'tanggal' && $request->filled('tgl_surat')) {
             $query->whereDate('tanggal', $request->tgl_surat);
         } elseif ($request->filterType == 'bulan' && $request->filled('bulan_surat')) {
             $bulan = substr($request->bulan_surat, 5, 2);
@@ -55,33 +49,33 @@ class SuratJalanController extends Controller
 
     public function create()
     {
-        $pemesanans = Pemesanan::with('detailPemesanan.barang')->whereNotIn('id_pemesanan', function($query) {
-            $query->select('id_pemesanan')->from('surat_jalans');
-        })->get();
+        $barangKeluars = BarangKeluar::with('pemesanan')
+            ->whereNotIn('id_keluar', SuratJalan::pluck('id_keluar'))
+            ->get();
 
         $last = SuratJalan::orderBy('id_surat_jalan', 'desc')->first();
         $number = $last ? ((int)substr($last->id_surat_jalan, 2)) + 1 : 1;
         $newId = 'SJ' . str_pad($number, 4, '0', STR_PAD_LEFT);
 
-        return view('surat_jalan.create', compact('pemesanans','newId'));
+        return view('surat_jalan.create', compact('barangKeluars', 'newId'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'id_pemesanan' => 'required|exists:pemesanans,id_pemesanan',
             'id_surat_jalan' => 'required|unique:surat_jalans,id_surat_jalan',
+            'id_keluar' => 'required|exists:barang_keluars,id_keluar',
             'tanggal' => 'required|date',
         ]);
 
-        $pemesan = Pemesanan::findOrFail($request->id_pemesanan);
+        $barangKeluar = BarangKeluar::with('pemesanan')->findOrFail($request->id_keluar);
 
         SuratJalan::create([
             'id_surat_jalan' => $request->id_surat_jalan,
-            'id_pemesanan' => $pemesan->id_pemesanan,
-            'tanggal'       => $request->tanggal,
-            'nama_pemesan'  => $pemesan->nama_pemesan,
-            'alamat'        => $pemesan->alamat,
+            'id_keluar' => $barangKeluar->id_keluar,
+            'tanggal' => $request->tanggal,
+            'nama_pemesan' => $barangKeluar->pemesanan->nama_pemesan ?? '-',
+            'alamat' => $barangKeluar->pemesanan->alamat ?? '-',
         ]);
 
         return redirect()->route('surat_jalan.index')->with('success', 'Surat jalan berhasil dibuat.');
@@ -94,27 +88,27 @@ class SuratJalanController extends Controller
 
     public function edit(SuratJalan $suratJalan)
     {
-        $pemesanans = Pemesanan::all();
-        return view('surat_jalan.edit', compact('suratJalan', 'pemesanans'));
+        $barangKeluars = BarangKeluar::with('pemesanan')->get();
+        return view('surat_jalan.edit', compact('suratJalan', 'barangKeluars'));
     }
 
     public function update(Request $request, SuratJalan $suratJalan)
     {
         $request->validate([
-            'id_pemesanan' => 'required|exists:pemesanans,id_pemesanan|unique:surat_jalans,id_pemesanan,' . $suratJalan->id_surat_jalan . ',id_surat_jalan',
+            'id_keluar' => 'required|exists:barang_keluars,id_keluar|unique:surat_jalans,id_keluar,' . $suratJalan->id_surat_jalan . ',id_surat_jalan',
             'tanggal' => 'required|date',
         ]);
 
-        $pemesan = Pemesanan::findOrFail($request->id_pemesanan);
+        $barangKeluar = BarangKeluar::with('pemesanan')->findOrFail($request->id_keluar);
 
         $suratJalan->update([
-            'id_pemesanan' => $pemesan->id_pemesanan,
-            'tanggal'       => $request->tanggal,
-            'nama_pemesan'  => $pemesan->nama_pemesan,
-            'alamat'        => $pemesan->alamat,
+            'id_keluar' => $barangKeluar->id_keluar,
+            'tanggal' => $request->tanggal,
+            'nama_pemesan' => $barangKeluar->pemesanan->nama_pemesan ?? '-',
+            'alamat' => $barangKeluar->pemesanan->alamat ?? '-',
         ]);
 
-        return redirect()->route('surat_jalan.index')->with('success', 'Surat jalan berhasil diupdate.');
+        return redirect()->route('surat_jalan.index')->with('success', 'Surat jalan berhasil diperbarui.');
     }
 
     public function destroy(SuratJalan $suratJalan)
@@ -125,7 +119,7 @@ class SuratJalanController extends Controller
 
     public function cetak($id)
     {
-        $suratJalan = SuratJalan::with('pemesanan.barangKeluar.detailBarangKeluar.barang')->findOrFail($id);
+        $suratJalan = SuratJalan::with('barangKeluar.detailBarangKeluar.barang', 'barangKeluar.pemesanan')->findOrFail($id);
         return view('surat_jalan.cetak', compact('suratJalan'));
     }
 
@@ -134,7 +128,7 @@ class SuratJalanController extends Controller
         $filter = $request->filter;
         $value = $request->value;
 
-        $suratJalans = SuratJalan::with('pemesanan.barangKeluar.detailBarangKeluar.barang');
+        $suratJalans = SuratJalan::with('barangKeluar.detailBarangKeluar.barang', 'barangKeluar.pemesanan');
 
         if ($filter && $value) {
             if ($filter === 'tanggal') {

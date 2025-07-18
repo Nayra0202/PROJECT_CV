@@ -15,10 +15,10 @@
                     <input type="text" class="form-control" value="{{ $barangKeluar->id_keluar }}" readonly>
                 </div>
 
-                {{-- ID Permintaan --}}
+                {{-- ID Pemesanan --}}
                 <div class="mb-3">
-                    <label class="form-label">Detail Pemesanan</label>
-                    <input type="text" class="form-control" value="{{ $barangKeluar->id_permintaan }} - {{ $barangKeluar->permintaan->nama_pemesan ?? '' }}" readonly>
+                    <label class="form-label">ID Pemesanan</label>
+                    <input type="text" class="form-control" value="{{ $barangKeluar->id_pemesanan }} " readonly>
                 </div>
 
                 {{-- Tanggal Keluar --}}

@@ -16,9 +16,9 @@
         </div>
 
         <div class="mb-3">
-            <label for="tgl_surat" class="form-label">Tanggal Surat Jalan</label>
+            <label for="tanggal" class="form-label">Tanggal Surat Jalan</label>
             <input type="date" name="tanggal" id="tanggal" class="form-control" value="{{ old('tanggal', $suratJalan->tanggal) }}" required>
-            @error('tgl_surat')
+            @error('tanggal')
                 <div class="alert alert-danger mt-1">{{ $message }}</div>
             @enderror
         </div>
@@ -37,6 +37,19 @@
             @error('alamat')
                 <div class="alert alert-danger mt-1">{{ $message }}</div>
             @enderror
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label">Daftar Barang</label>
+            <ul class="list-group">
+                @forelse($suratJalan->barangKeluar->detailBarangKeluar as $detail)
+                    <li class="list-group-item">
+                        {{ $detail->barang->nama_barang ?? '-' }} - {{ $detail->jumlah }} {{ $detail->satuan }}
+                    </li>
+                @empty
+                    <li class="list-group-item text-muted">Tidak ada barang</li>
+                @endforelse
+            </ul>
         </div>
 
         <button type="submit" class="btn btn-primary">Update</button>

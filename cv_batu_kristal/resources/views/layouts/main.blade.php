@@ -61,12 +61,6 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ route('pemesanan.index') }}">
-                        <span><i class="ti ti-cards"></i></span>
-                        <span class="hide-menu">Pemesanan</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
                     <a class="sidebar-link" href="{{ route('laporan.barang') }}">
                         <span><i class="ti ti-report"></i></span>
                         <span class="hide-menu">Laporan Barang</span>
